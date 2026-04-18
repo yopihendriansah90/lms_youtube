@@ -1,17 +1,20 @@
 <x-member-layout :title="$material->title">
     <section class="page-stack">
-        <div class="page-hero">
+        <div class="section-header">
             <div class="flex flex-wrap items-center gap-2 text-xs text-white/45">
                 <a href="{{ route('member.materials') }}" class="text-brand-200">Materi</a>
                 <span>/</span>
                 <span>{{ $material->title }}</span>
             </div>
-            <div class="mt-4 flex items-start justify-between gap-4">
+            <div class="mt-4 flex items-start justify-center gap-4">
                 <div>
                     <span class="section-pill">{{ $material->access_type === 'free' ? 'Konten Gratis' : 'Konten Premium' }}</span>
-                    <h1 class="page-title mt-4">{{ $material->title }}</h1>
-                    <p class="page-hero-copy">{{ $material->description ?: 'Materi belajar ini berisi video pembelajaran, dokumen pendukung, dan update rutin.' }}</p>
+                    <h1 class="section-header-title">{{ $material->title }}</h1>
+                    <p class="section-header-copy">{{ $material->description ?: 'Materi belajar ini berisi video pembelajaran, dokumen pendukung, dan update rutin.' }}</p>
                 </div>
+            </div>
+            <div class="section-header-indicator">
+                <div class="section-header-indicator-dot"></div>
             </div>
         </div>
 
@@ -53,6 +56,12 @@
                                 {{ $primaryVideo->access_type === 'free' ? 'Gratis' : 'Premium' }}
                             </span>
                         </div>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            @if ($primaryVideo->is_preview)
+                                <span class="inline-chip">Preview Aktif</span>
+                            @endif
+                            <span class="inline-chip">{{ $primaryVideo->can_access ? 'Sudah Bisa Ditonton' : 'Masih Terkunci' }}</span>
+                        </div>
                     </div>
                 @endif
             </div>
@@ -83,12 +92,70 @@
                             <div class="info-item">
                                 <p class="text-sm font-semibold text-white">{{ $document->title }}</p>
                                 <p class="mt-1 text-xs text-white/45">{{ $document->access_type === 'free' ? 'Gratis' : 'Premium' }}</p>
+                                @if ($document->description)
+                                    <p class="mt-2 text-xs leading-6 text-white/55">{{ $document->description }}</p>
+                                @endif
                             </div>
                         @empty
                             <p class="text-sm text-white/45">Belum ada dokumen PDF.</p>
                         @endforelse
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="rich-card">
+            <div class="mb-5 flex items-center justify-between">
+                <div>
+                    <p class="meta-copy">Daftar Video Materi</p>
+                    <h2 class="section-title mt-2">Seluruh Video Dalam Tema Kelas Ini</h2>
+                </div>
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-2">
+                @forelse ($material->videos as $video)
+                    <article class="feature-list-card overflow-hidden">
+                        <div class="overflow-hidden rounded-[20px] border border-white/8 bg-white/[0.02]">
+                            @if ($video->thumbnail_url)
+                                <img
+                                    src="{{ $video->thumbnail_url }}"
+                                    alt="{{ $video->title }}"
+                                    class="aspect-video h-auto w-full object-cover"
+                                    loading="lazy"
+                                >
+                            @else
+                                <div class="flex aspect-video items-center justify-center bg-white/[0.02]">
+                                    <p class="meta-copy">Thumbnail Video</p>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="mt-4 flex items-start justify-between gap-4">
+                            <div class="min-w-0 flex-1">
+                                <p class="card-heading">{{ $video->title }}</p>
+                                <p class="body-copy mt-2">{{ $video->description ?: 'Video pembelajaran untuk materi ini.' }}</p>
+                            </div>
+                            <span class="status-chip {{ $video->access_type === 'free' ? 'is-free' : 'is-paid' }}">
+                                {{ $video->access_type === 'free' ? 'Gratis' : 'Premium' }}
+                            </span>
+                        </div>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="inline-chip">{{ $video->is_preview ? 'Preview Aktif' : 'Video Penuh' }}</span>
+                            <span class="inline-chip border-brand-400/20 bg-brand-400/8 text-brand-200">
+                                {{ $video->can_access ? 'Sudah Terbuka' : 'Perlu Unlock' }}
+                            </span>
+                        </div>
+                        <div class="mt-5 flex flex-wrap gap-3">
+                            <a href="{{ route('member.materials.show', ['material' => $material, 'video' => $video->id]) }}" class="secondary-btn">
+                                {{ $primaryVideo?->is($video) ? 'Sedang Diputar' : 'Lihat Detail Video' }}
+                            </a>
+                            @unless ($video->can_access)
+                                <a href="{{ route('member.questions') }}" class="card-link">Ajukan Unlock</a>
+                            @endunless
+                        </div>
+                    </article>
+                @empty
+                    <p class="text-sm text-white/45">Belum ada video pembelajaran untuk materi ini.</p>
+                @endforelse
             </div>
         </div>
 

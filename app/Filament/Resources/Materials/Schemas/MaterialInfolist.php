@@ -14,20 +14,20 @@ class MaterialInfolist
             ->columns(2)
             ->components([
                 TextEntry::make('program.title')
-                    ->label('Program')
+                    ->label('Kelas Materi')
                     ->placeholder('-'),
                 TextEntry::make('mentor.name')
                     ->label('Mentor')
                     ->placeholder('-'),
                 TextEntry::make('title')
-                    ->label('Judul'),
+                    ->label('Materi Kelas'),
                 TextEntry::make('slug')
                     ->label('Slug'),
                 TextEntry::make('excerpt')
-                    ->label('Ringkasan')
+                    ->label('Ringkasan Materi')
                     ->placeholder('-'),
                 TextEntry::make('description')
-                    ->label('Deskripsi')
+                    ->label('Deskripsi Materi')
                     ->placeholder('-')
                     ->columnSpanFull(),
                 TextEntry::make('thumbnail')
@@ -38,7 +38,7 @@ class MaterialInfolist
                 TextEntry::make('visibility')
                     ->label('Visibilitas'),
                 TextEntry::make('access_type')
-                    ->label('Tipe Akses'),
+                    ->label('Akses Materi'),
                 TextEntry::make('price')
                     ->label('Harga')
                     ->formatStateUsing(fn ($state) => 'Rp ' . number_format((float) $state, 0, ',', '.')),

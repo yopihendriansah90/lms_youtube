@@ -25,6 +25,10 @@ class DemoLmsContentSeeder extends Seeder
         $mentor = User::query()->where('email', 'mentor@mail.com')->first();
         $memberOne = User::query()->where('email', 'member1@mail.com')->first();
         $memberTwo = User::query()->where('email', 'member2@mail.com')->first();
+        $youtubePrimaryUrl = 'https://www.youtube.com/watch?v=qsFeDeHI9Yo';
+        $youtubePrimaryId = 'qsFeDeHI9Yo';
+        $youtubeSecondaryUrl = 'https://www.youtube.com/watch?v=u2YU-Aql1ps';
+        $youtubeSecondaryId = 'u2YU-Aql1ps';
 
         if (! $mentor || ! $memberOne || ! $memberTwo) {
             $this->command?->warn('User demo belum lengkap. Seeder konten LMS dilewati.');
@@ -103,11 +107,12 @@ class DemoLmsContentSeeder extends Seeder
         );
 
         $freeVideo = Video::query()->updateOrCreate(
-            ['material_id' => $freeMaterial->id, 'youtube_video_id' => 'M7lc1UVf-VE'],
+            ['material_id' => $freeMaterial->id, 'title' => 'Pengenalan Strategi Channel'],
             [
                 'section_id' => $freeSection->id,
                 'title' => 'Pengenalan Strategi Channel',
-                'youtube_url' => 'https://www.youtube.com/watch?v=M7lc1UVf-VE',
+                'youtube_url' => $youtubePrimaryUrl,
+                'youtube_video_id' => $youtubePrimaryId,
                 'description' => 'Video pembuka untuk memahami arah channel, value proposition, dan ritme upload konten.',
                 'duration_in_seconds' => 630,
                 'access_type' => 'free',
@@ -118,13 +123,18 @@ class DemoLmsContentSeeder extends Seeder
                 'sort_order' => 1,
             ],
         );
+        $freeVideo->forceFill([
+            'youtube_url' => $youtubePrimaryUrl,
+            'youtube_video_id' => $youtubePrimaryId,
+        ])->save();
 
         $premiumPreviewVideo = Video::query()->updateOrCreate(
-            ['material_id' => $premiumMaterial->id, 'youtube_video_id' => 'ysz5S6PUM-U'],
+            ['material_id' => $premiumMaterial->id, 'title' => 'Preview Monetisasi Premium'],
             [
                 'section_id' => $premiumSection->id,
                 'title' => 'Preview Monetisasi Premium',
-                'youtube_url' => 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
+                'youtube_url' => $youtubeSecondaryUrl,
+                'youtube_video_id' => $youtubeSecondaryId,
                 'description' => 'Preview gratis untuk melihat garis besar strategi monetisasi sebelum unlock penuh.',
                 'duration_in_seconds' => 420,
                 'access_type' => 'paid',
@@ -135,13 +145,18 @@ class DemoLmsContentSeeder extends Seeder
                 'sort_order' => 1,
             ],
         );
+        $premiumPreviewVideo->forceFill([
+            'youtube_url' => $youtubeSecondaryUrl,
+            'youtube_video_id' => $youtubeSecondaryId,
+        ])->save();
 
         $premiumLockedVideo = Video::query()->updateOrCreate(
-            ['material_id' => $premiumMaterial->id, 'youtube_video_id' => 'aqz-KE-bpKQ'],
+            ['material_id' => $premiumMaterial->id, 'title' => 'Framework Produk dan Penawaran'],
             [
                 'section_id' => $premiumSection->id,
                 'title' => 'Framework Produk dan Penawaran',
-                'youtube_url' => 'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
+                'youtube_url' => $youtubeSecondaryUrl,
+                'youtube_video_id' => $youtubeSecondaryId,
                 'description' => 'Video utama premium yang mengupas mapping produk, pricing, dan skema unlock konten.',
                 'duration_in_seconds' => 980,
                 'access_type' => 'paid',
@@ -152,6 +167,10 @@ class DemoLmsContentSeeder extends Seeder
                 'sort_order' => 2,
             ],
         );
+        $premiumLockedVideo->forceFill([
+            'youtube_url' => $youtubeSecondaryUrl,
+            'youtube_video_id' => $youtubeSecondaryId,
+        ])->save();
 
         $freePdf = PdfDocument::query()->updateOrCreate(
             ['material_id' => $freeMaterial->id, 'title' => 'Worksheet Fondasi Channel'],
@@ -203,7 +222,7 @@ class DemoLmsContentSeeder extends Seeder
                 'title' => 'Weekly Strategy Alignment Q3',
                 'description' => 'Sesi rekaman Zoom untuk alignment strategi konten dan evaluasi progres member.',
                 'zoom_recording_url' => 'https://zoom.us/rec/share/demo-weekly-strategy-alignment',
-                'youtube_url' => 'https://www.youtube.com/watch?v=M7lc1UVf-VE',
+                'youtube_url' => $youtubePrimaryUrl,
                 'thumbnail' => 'zoom/weekly-strategy-alignment-q3.jpg',
                 'recorded_at' => now()->subDays(4),
                 'access_type' => 'free',
@@ -221,7 +240,7 @@ class DemoLmsContentSeeder extends Seeder
                 'title' => 'Technical Workshop: Architecture Review',
                 'description' => 'Sesi Zoom premium yang membahas arsitektur produk LMS, unlock flow, dan strategi konten lanjutan.',
                 'zoom_recording_url' => 'https://zoom.us/rec/share/demo-architecture-review',
-                'youtube_url' => 'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
+                'youtube_url' => $youtubeSecondaryUrl,
                 'thumbnail' => 'zoom/technical-workshop-architecture-review.jpg',
                 'recorded_at' => now()->subDays(2),
                 'access_type' => 'paid',
@@ -252,7 +271,7 @@ class DemoLmsContentSeeder extends Seeder
             [
                 'mentor_id' => $mentor->id,
                 'answer' => 'Mulai dari preview gratis, lanjutkan dengan hasil yang ingin dicapai member, lalu arahkan ke unlock video utama dan PDF kerja. Urutan ini menjaga konteks dan meningkatkan konversi.',
-                'answer_video_url' => 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
+                'answer_video_url' => $youtubeSecondaryUrl,
                 'is_published' => true,
                 'published_at' => now()->subDay(),
             ],
@@ -347,7 +366,7 @@ class DemoLmsContentSeeder extends Seeder
             ['key' => 'portal.hero_video_url'],
             [
                 'group' => 'portal',
-                'value' => 'https://www.youtube.com/watch?v=M7lc1UVf-VE',
+                'value' => $youtubePrimaryUrl,
                 'type' => 'text',
             ],
         );

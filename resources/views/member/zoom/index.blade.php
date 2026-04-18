@@ -1,11 +1,14 @@
 <x-member-layout title="Rekaman Zoom">
     <section class="page-stack">
-        <div class="page-hero">
+        <div class="section-header">
             <span class="section-pill">Rekaman Zoom</span>
-            <h1 class="page-title mt-4">Rekaman Sesi Zoom</h1>
-            <p class="page-hero-copy">
+            <h1 class="section-header-title">Rekaman Sesi Zoom</h1>
+            <p class="section-header-copy">
                 Semua sesi kelas, workshop, dan diskusi Zoom tersimpan rapi agar dapat ditonton ulang kapan saja dari area member.
             </p>
+            <div class="section-header-indicator">
+                <div class="section-header-indicator-dot"></div>
+            </div>
         </div>
 
         <div class="grid gap-4 sm:grid-cols-2">

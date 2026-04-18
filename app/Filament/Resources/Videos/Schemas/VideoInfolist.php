@@ -13,8 +13,11 @@ class VideoInfolist
         return $schema
             ->columns(2)
             ->components([
+                TextEntry::make('material.program.title')
+                    ->label('Kelas Materi')
+                    ->placeholder('-'),
                 TextEntry::make('material.title')
-                    ->label('Material'),
+                    ->label('Materi Kelas'),
                 TextEntry::make('section.title')
                     ->label('Bagian Materi')
                     ->placeholder('-'),
@@ -34,7 +37,7 @@ class VideoInfolist
                     ->suffix(' detik')
                     ->placeholder('-'),
                 TextEntry::make('access_type')
-                    ->label('Tipe Akses'),
+                    ->label('Akses Video'),
                 TextEntry::make('price')
                     ->label('Harga')
                     ->formatStateUsing(fn ($state) => 'Rp ' . number_format((float) $state, 0, ',', '.')),

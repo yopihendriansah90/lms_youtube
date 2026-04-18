@@ -5,7 +5,7 @@ namespace App\Filament\Resources\Videos\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
+use App\Filament\Resources\Videos\VideoResource;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -18,8 +18,11 @@ class VideosTable
     {
         return $table
             ->columns([
+                TextColumn::make('material.program.title')
+                    ->label('Kelas Materi')
+                    ->searchable(),
                 TextColumn::make('material.title')
-                    ->label('Materi')
+                    ->label('Materi Kelas')
                     ->searchable(),
                 TextColumn::make('section.title')
                     ->label('Bagian')
@@ -37,7 +40,7 @@ class VideosTable
                     ->suffix(' detik')
                     ->sortable(),
                 TextColumn::make('access_type')
-                    ->label('Akses')
+                    ->label('Akses Video')
                     ->badge()
                     ->searchable(),
                 TextColumn::make('price')
@@ -69,7 +72,13 @@ class VideosTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->recordUrl(fn ($record) => VideoResource::getUrl('edit', ['record' => $record]))
             ->filters([
+                SelectFilter::make('material_id')
+                    ->label('Materi Kelas')
+                    ->relationship('material', 'title')
+                    ->searchable()
+                    ->preload(),
                 SelectFilter::make('access_type')
                     ->label('Tipe Akses')
                     ->options([
@@ -82,7 +91,6 @@ class VideosTable
                     ->label('Video Preview'),
             ])
             ->recordActions([
-                ViewAction::make(),
                 EditAction::make(),
             ])
             ->toolbarActions([

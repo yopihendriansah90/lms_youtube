@@ -2,12 +2,13 @@
 
 namespace App\Filament\Resources\Materials;
 
+use App\Filament\Resources\Materials\RelationManagers\MaterialUpdatesRelationManager;
+use App\Filament\Resources\Materials\RelationManagers\PdfDocumentsRelationManager;
+use App\Filament\Resources\Materials\RelationManagers\VideosRelationManager;
 use App\Filament\Resources\Materials\Pages\CreateMaterial;
 use App\Filament\Resources\Materials\Pages\EditMaterial;
 use App\Filament\Resources\Materials\Pages\ListMaterials;
-use App\Filament\Resources\Materials\Pages\ViewMaterial;
 use App\Filament\Resources\Materials\Schemas\MaterialForm;
-use App\Filament\Resources\Materials\Schemas\MaterialInfolist;
 use App\Filament\Resources\Materials\Tables\MaterialsTable;
 use App\Models\Material;
 use BackedEnum;
@@ -37,11 +38,6 @@ class MaterialResource extends Resource
         return MaterialForm::configure($schema);
     }
 
-    public static function infolist(Schema $schema): Schema
-    {
-        return MaterialInfolist::configure($schema);
-    }
-
     public static function table(Table $table): Table
     {
         return MaterialsTable::configure($table);
@@ -50,7 +46,9 @@ class MaterialResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            VideosRelationManager::class,
+            PdfDocumentsRelationManager::class,
+            MaterialUpdatesRelationManager::class,
         ];
     }
 
@@ -59,7 +57,6 @@ class MaterialResource extends Resource
         return [
             'index' => ListMaterials::route('/'),
             'create' => CreateMaterial::route('/create'),
-            'view' => ViewMaterial::route('/{record}'),
             'edit' => EditMaterial::route('/{record}/edit'),
         ];
     }

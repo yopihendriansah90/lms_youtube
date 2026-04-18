@@ -1,26 +1,95 @@
 <x-member-layout title="Daftar Materi">
-    <section class="page-stack">
-        <div class="page-hero">
-            <span class="section-pill">Modul Belajar</span>
-            <h1 class="page-title mt-4">Daftar Materi Pembelajaran</h1>
-            <p class="page-hero-copy">
-                Pilih materi yang ingin dipelajari. Video gratis bisa langsung diputar, sedangkan materi premium memerlukan unlock terlebih dahulu.
-            </p>
+    <section class="materials-page-stack">
+        <div class="materials-page-header">
+            <h1 class="materials-page-title">Racikan Pembelajaran Alfaruq WFA</h1>
+        </div>
+
+        @if ($featuredMaterial && $featuredPrimaryVideo)
+            <a href="{{ route('member.materials.show', $featuredMaterial) }}" class="materials-hero-frame block">
+                <div class="overflow-hidden rounded-[24px] border border-white/8 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02),transparent_52%),rgba(255,255,255,0.01)] shadow-[0_20px_40px_rgba(0,0,0,0.22)]">
+                    @if ($featuredCanAccess)
+                        <div class="materials-hero-media">
+                            <iframe
+                                class="h-full w-full"
+                                src="https://www.youtube.com/embed/{{ $featuredPrimaryVideo->youtube_video_id }}"
+                                title="{{ $featuredPrimaryVideo->title }}"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                referrerpolicy="strict-origin-when-cross-origin"
+                                allowfullscreen
+                            ></iframe>
+                        </div>
+                    @else
+                        <div class="materials-hero-lock flex flex-col items-center justify-center text-center">
+                            <div class="flex h-16 w-16 items-center justify-center rounded-full border border-white/12 bg-white/[0.06] text-white/80 sm:h-18 sm:w-18">
+                                <span class="text-xs font-semibold tracking-[0.18em] uppercase">{{ $featuredPrimaryVideo->access_type === 'paid' ? 'Lock' : 'Play' }}</span>
+                            </div>
+                            <p class="mt-5 text-[11px] font-semibold tracking-[0.18em] text-white/62 uppercase">Mulai Belajar Sekarang</p>
+                        </div>
+                    @endif
+                </div>
+            </a>
+        @endif
+
+        <div class="materials-mobile-grid">
+            @if ($featuredMaterial)
+                <a href="{{ route('member.materials.show', $featuredMaterial) }}" class="materials-mobile-card text-center transition hover:border-white/14 hover:bg-white/[0.03]">
+                    <div class="materials-card-media mb-3">
+                        @if ($featuredPrimaryVideo?->youtube_video_id)
+                            <img
+                                src="https://img.youtube.com/vi/{{ $featuredPrimaryVideo->youtube_video_id }}/hqdefault.jpg"
+                                alt="{{ $featuredMaterial->title }}"
+                                class="h-full w-full object-cover"
+                                loading="lazy"
+                            >
+                        @else
+                            <div class="flex h-full items-center justify-center">
+                                <p class="meta-copy">Video Placeholder</p>
+                            </div>
+                        @endif
+                    </div>
+                    <h2 class="materials-card-title">{{ $featuredMaterial->title }}</h2>
+                    <p class="materials-card-action">
+                        {{ $featuredCanAccess ? 'Akses Materi' : 'Buka Kunci Materi' }}
+                    </p>
+                </a>
+            @endif
+            @foreach ($materials as $material)
+                <a href="{{ route('member.materials.show', $material) }}" class="materials-mobile-card text-center transition hover:border-white/14 hover:bg-white/[0.03]">
+                    <div class="materials-card-media mb-3">
+                        @if ($material->primary_video?->youtube_video_id)
+                            <img
+                                src="https://img.youtube.com/vi/{{ $material->primary_video->youtube_video_id }}/hqdefault.jpg"
+                                alt="{{ $material->title }}"
+                                class="h-full w-full object-cover"
+                                loading="lazy"
+                            >
+                        @else
+                            <div class="flex h-full items-center justify-center">
+                                <p class="meta-copy">Video Placeholder</p>
+                            </div>
+                        @endif
+                    </div>
+                    <h2 class="materials-card-title">{{ $material->title }}</h2>
+                    <p class="materials-card-action">
+                        {{ $material->can_access_primary_video ? 'Akses Materi' : 'Buka Kunci Materi' }}
+                    </p>
+                </a>
+            @endforeach
         </div>
 
         @if ($latestUpdates->isNotEmpty())
-            <div class="rich-card">
+            <div class="rich-card materials-updates-shell">
                 <div class="flex items-center justify-between gap-4">
                     <div>
                         <p class="meta-copy">Update Materi</p>
-                        <h2 class="section-title mt-2">Update Terbaru</h2>
+                        <h2 class="materials-section-title mt-2">Update Terbaru</h2>
                     </div>
                     <a href="{{ route('member.updates') }}" class="card-link">Lihat semua</a>
                 </div>
 
-                <div class="mt-5 grid gap-3">
+                <div class="update-rail materials-update-rail mt-4">
                     @foreach ($latestUpdates as $update)
-                        <article class="feature-list-card">
+                        <article class="update-rail-card">
                             <p class="meta-copy">{{ $update->material?->title ?? 'Materi umum' }}</p>
                             <h3 class="card-heading mt-3">{{ $update->title }}</h3>
                             <p class="body-copy mt-2">{{ \Illuminate\Support\Str::limit(strip_tags((string) $update->content), 140) }}</p>
@@ -29,30 +98,6 @@
                 </div>
             </div>
         @endif
-
-        <div class="grid gap-4">
-            @foreach ($materials as $material)
-                <a href="{{ route('member.materials.show', $material) }}" class="rich-card transition hover:border-brand-400/25">
-                    <div class="flex items-start justify-between gap-4">
-                        <div>
-                            <h2 class="card-title">{{ $material->title }}</h2>
-                            <p class="body-copy mt-2">{{ $material->excerpt ?: 'Materi pembelajaran dengan video, PDF, dan update harian.' }}</p>
-                        </div>
-                        <span class="status-chip {{ $material->access_type === 'free' ? 'is-free' : 'is-paid' }}">
-                            {{ $material->access_type === 'free' ? 'Gratis' : 'Berbayar' }}
-                        </span>
-                    </div>
-
-                    <div class="mt-5 flex flex-wrap items-center gap-2 text-xs text-white/45">
-                        <span class="inline-chip">{{ $material->mentor?->name ?? 'Mentor belum ditentukan' }}</span>
-                        <span class="inline-chip">{{ $material->videos->count() }} video</span>
-                        @if ($material->access_type === 'paid')
-                            <span class="inline-chip border-brand-400/20 bg-brand-400/8 text-brand-200">Rp {{ number_format((float) $material->price, 0, ',', '.') }}</span>
-                        @endif
-                    </div>
-                </a>
-            @endforeach
-        </div>
 
         <div class="pagination-shell">
             {{ $materials->links() }}

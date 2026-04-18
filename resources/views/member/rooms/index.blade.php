@@ -1,11 +1,14 @@
 <x-member-layout title="Room Zoom Meeting">
     <section class="page-stack">
-        <div class="page-hero">
+        <div class="section-header">
             <span class="section-pill">Live Zoom Room</span>
-            <h1 class="page-title mt-4">Daftar Zoom Meeting</h1>
-            <p class="page-hero-copy">
+            <h1 class="section-header-title">Daftar Zoom Meeting</h1>
+            <p class="section-header-copy">
                 Pantau sesi yang sedang berlangsung dan agenda meeting berikutnya dari satu halaman khusus.
             </p>
+            <div class="section-header-indicator">
+                <div class="section-header-indicator-dot"></div>
+            </div>
         </div>
 
         <div class="rich-card">

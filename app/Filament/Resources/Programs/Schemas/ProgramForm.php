@@ -17,10 +17,10 @@ class ProgramForm
     {
         return $schema
             ->components([
-                Section::make('Informasi Program')
+                Section::make('Informasi Kelas Materi')
                     ->schema([
                         TextInput::make('title')
-                            ->label('Judul Program')
+                            ->label('Nama Kelas Materi')
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
@@ -31,10 +31,10 @@ class ProgramForm
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
                         TextInput::make('subtitle')
-                            ->label('Subjudul')
+                            ->label('Subjudul Kelas')
                             ->maxLength(255),
                         FileUpload::make('cover_image')
-                            ->label('Cover Program')
+                            ->label('Cover Kelas')
                             ->image()
                             ->directory('programs/covers')
                             ->imageEditor(),

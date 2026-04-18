@@ -1,60 +1,185 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# LMS YouTube
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Portal LMS berbasis Laravel 12 dengan:
 
-## About Laravel
+- Filament 4 untuk admin panel
+- Filament Shield untuk role & permission
+- Filament Spatie Media Library untuk manajemen file
+- Frontend member mobile-first dengan tema dark
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Requirement
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- PHP `8.2+`
+- Composer
+- Node.js `18+`
+- NPM
+- SQLite atau MySQL
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Setup Cepat
 
-## Learning Laravel
+### 1. Clone project
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```bash
+git clone <url-repository> lms
+cd lms
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 2. Install dependency backend dan frontend
 
-## Laravel Sponsors
+```bash
+composer install
+npm install
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 3. Buat file environment
 
-### Premium Partners
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 4. Atur database
 
-## Contributing
+Default project ini paling mudah dijalankan dengan `SQLite`.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Buat file database:
 
-## Code of Conduct
+```bash
+touch database/database.sqlite
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Pastikan `.env` berisi:
 
-## Security Vulnerabilities
+```env
+DB_CONNECTION=sqlite
+DB_DATABASE=/absolute/path/ke/project/database/database.sqlite
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Jika ingin pakai MySQL, ubah bagian ini:
 
-## License
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=nama_database
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# lms_youtube
+### 5. Jalankan migration dan seeder
+
+```bash
+php artisan migrate
+php artisan db:seed
+```
+
+### 6. Buat symbolic link storage
+
+Ini wajib supaya file upload dan media bisa tampil di frontend.
+
+```bash
+php artisan storage:link
+```
+
+### 7. Jalankan project
+
+Untuk development:
+
+```bash
+php artisan serve
+npm run dev
+```
+
+Atau build asset production:
+
+```bash
+npm run build
+```
+
+## Akses Project
+
+### Admin panel
+
+```text
+http://127.0.0.1:8000/admin
+```
+
+### Member portal
+
+```text
+http://127.0.0.1:8000/login
+```
+
+## Akun Demo
+
+Seeder project ini membuat akun berikut:
+
+### Super Admin
+
+- Email: `superadmin@mail.com`
+- Password: `superadmin`
+
+### Admin
+
+- Email: `admin@mail.com`
+- Password: `admin123`
+
+### Mentor
+
+- Email: `mentor@mail.com`
+- Password: `mentor123`
+
+### Member
+
+- Email: `member1@mail.com`
+- Password: `member123`
+
+- Email: `member2@mail.com`
+- Password: `member123`
+
+- Email: `member3@mail.com`
+- Password: `member123`
+
+## Struktur Admin
+
+Resource utama yang dipakai:
+
+- `Kelas Materi`
+- `Materi`
+- `Video Materi`
+- `Dokumen PDF`
+- `Update Materi`
+- `Member Profiles`
+- `Mentor Profiles`
+
+Alur input konten:
+
+1. Buat `Kelas Materi`
+2. Buat `Materi`
+3. Buat `Video Materi` dan hubungkan ke materi
+4. Atur tiap video sebagai `free` atau `paid`
+5. Upload dokumen PDF dan update materi bila perlu
+
+## Seeder Dummy Video
+
+Seeder dummy memakai dua link YouTube berikut:
+
+- `https://www.youtube.com/watch?v=qsFeDeHI9Yo`
+- `https://www.youtube.com/watch?v=u2YU-Aql1ps`
+
+## Perintah Berguna
+
+```bash
+php artisan optimize:clear
+php artisan view:cache
+php artisan route:list
+php artisan db:seed --class=DemoLmsContentSeeder
+php artisan db:seed --class=DemoYoutubeMaterialVideoSeeder
+```
+
+## Catatan
+
+- Jika asset atau CSS tidak berubah, jalankan ulang `npm run build` atau `npm run dev`
+- Jika media tidak tampil, cek `php artisan storage:link`
+- Jika role/permission bermasalah, jalankan ulang `php artisan db:seed`
+

@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             SuperAdminSeeder::class,
             DemoUserSeeder::class,
             DemoLmsContentSeeder::class,
+            DemoYoutubeMaterialVideoSeeder::class,
         ]);
     }
 }

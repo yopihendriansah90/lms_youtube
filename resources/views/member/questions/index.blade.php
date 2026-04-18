@@ -1,11 +1,14 @@
 <x-member-layout title="Tanya Jawab Mentor">
     <section class="page-stack">
-        <div class="page-hero">
+        <div class="section-header">
             <span class="section-pill">Mentor Support</span>
-            <h1 class="page-title mt-4">Tanya Jawab Mentor Faruq</h1>
-            <p class="page-hero-copy">
+            <h1 class="section-header-title">Tanya Jawab Mentor Faruq</h1>
+            <p class="section-header-copy">
                 Ajukan pertanyaan seputar materi, strategi belajar, atau kendala teknis. Semua pertanyaan akan masuk ke dashboard mentor untuk ditindaklanjuti.
             </p>
+            <div class="section-header-indicator">
+                <div class="section-header-indicator-dot"></div>
+            </div>
         </div>
 
         <div class="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">

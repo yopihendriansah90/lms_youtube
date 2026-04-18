@@ -4,7 +4,7 @@
             <div class="surface-card p-6 sm:p-8">
                 <div class="mb-8 space-y-4 text-center">
                     <span class="section-pill">Akses Member</span>
-                    <h1 class="display-heading mx-auto max-w-[11ch] text-[2.5rem] sm:text-[3rem]">Program Kelas Alfaruq WFA</h1>
+                    <h1 class="display-heading mx-auto max-w-[11ch] text-[2.1rem] sm:text-[2.45rem]">Program Kelas Alfaruq WFA</h1>
                     <p class="mx-auto max-w-md text-[15px] leading-7 text-white/60">
                         Masuk untuk membuka materi, rekaman Zoom, dan update pembelajaran langsung dari portal kelas Anda.
                     </p>
@@ -22,7 +22,7 @@
                     </div>
 
                     <div class="space-y-2">
-                        <label for="password" class="form-label">Password Rahasia</label>
+                        <label for="password" class="form-label">Password</label>
                         <input id="password" name="password" type="password" class="field-shell" placeholder="Masukkan password rahasia Anda" required>
                         @error('password')
                             <p class="text-sm text-danger-400">{{ $message }}</p>
@@ -36,12 +36,6 @@
 
                     <button type="submit" class="primary-btn w-full text-base">Masuk</button>
                 </form>
-
-                <div class="mt-8 grid gap-3 text-xs text-white/45 sm:grid-cols-3">
-                    <div class="info-item">Materi terstruktur</div>
-                    <div class="info-item">Rekaman Zoom terarsip</div>
-                    <div class="info-item">Tanya jawab mentor</div>
-                </div>
             </div>
         </div>
     </section>

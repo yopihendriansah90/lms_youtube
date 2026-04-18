@@ -5,9 +5,7 @@ namespace App\Filament\Resources\Programs;
 use App\Filament\Resources\Programs\Pages\CreateProgram;
 use App\Filament\Resources\Programs\Pages\EditProgram;
 use App\Filament\Resources\Programs\Pages\ListPrograms;
-use App\Filament\Resources\Programs\Pages\ViewProgram;
 use App\Filament\Resources\Programs\Schemas\ProgramForm;
-use App\Filament\Resources\Programs\Schemas\ProgramInfolist;
 use App\Filament\Resources\Programs\Tables\ProgramsTable;
 use App\Models\Program;
 use BackedEnum;
@@ -22,11 +20,11 @@ class ProgramResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedFolder;
 
-    protected static ?string $navigationLabel = 'Program';
+    protected static ?string $navigationLabel = 'Kelas Materi';
 
-    protected static ?string $modelLabel = 'Program';
+    protected static ?string $modelLabel = 'Kelas Materi';
 
-    protected static ?string $pluralModelLabel = 'Program';
+    protected static ?string $pluralModelLabel = 'Kelas Materi';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Konten Belajar';
 
@@ -37,11 +35,6 @@ class ProgramResource extends Resource
         return ProgramForm::configure($schema);
     }
 
-    public static function infolist(Schema $schema): Schema
-    {
-        return ProgramInfolist::configure($schema);
-    }
-
     public static function table(Table $table): Table
     {
         return ProgramsTable::configure($table);
@@ -49,9 +42,7 @@ class ProgramResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
@@ -59,7 +50,6 @@ class ProgramResource extends Resource
         return [
             'index' => ListPrograms::route('/'),
             'create' => CreateProgram::route('/create'),
-            'view' => ViewProgram::route('/{record}'),
             'edit' => EditProgram::route('/{record}/edit'),
         ];
     }

@@ -1,11 +1,14 @@
 <x-member-layout title="Data Mentor">
     <section class="page-stack">
-        <div class="page-hero">
+        <div class="section-header">
             <span class="section-pill">Mentor Support</span>
-            <h1 class="page-title mt-4">Data Mentor</h1>
-            <p class="page-hero-copy">
+            <h1 class="section-header-title">Data Mentor</h1>
+            <p class="section-header-copy">
                 Kenali mentor aktif yang mendampingi materi, diskusi, dan sesi pembelajaran di program ini.
             </p>
+            <div class="section-header-indicator">
+                <div class="section-header-indicator-dot"></div>
+            </div>
         </div>
 
         <div class="grid gap-4">

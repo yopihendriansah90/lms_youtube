@@ -15,18 +15,18 @@ class ProgramInfolist
             ->columns(2)
             ->components([
                 TextEntry::make('title')
-                    ->label('Judul'),
+                    ->label('Nama Kelas'),
                 TextEntry::make('slug')
                     ->label('Slug'),
                 TextEntry::make('subtitle')
-                    ->label('Subjudul')
+                    ->label('Subjudul Kelas')
                     ->placeholder('-'),
                 TextEntry::make('description')
                     ->label('Deskripsi')
                     ->placeholder('-')
                     ->columnSpanFull(),
                 ImageEntry::make('cover_image')
-                    ->label('Cover')
+                    ->label('Cover Kelas')
                     ->placeholder('-'),
                 IconEntry::make('is_published')
                     ->label('Publish')

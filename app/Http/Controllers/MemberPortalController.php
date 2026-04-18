@@ -182,19 +182,65 @@ class MemberPortalController extends Controller
 
     public function materials(Request $request): View
     {
+        $user = $request->user();
+
+        $featuredMaterial = Material::query()
+            ->with(['mentor', 'videos'])
+            ->where('status', 'published')
+            ->whereHas('videos', fn ($query) => $query->where('is_published', true))
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->first();
+
+        $featuredPrimaryVideo = $featuredMaterial?->videos
+            ->where('is_published', true)
+            ->sortBy('sort_order')
+            ->first();
+
+        $featuredCanAccess = $featuredPrimaryVideo
+            ? $this->userCanAccessContent($user, $featuredPrimaryVideo)
+            : false;
+
+        $materials = Material::query()
+            ->with([
+                'mentor',
+                'videos' => fn ($query) => $query->where('is_published', true)->orderBy('sort_order'),
+            ])
+            ->where('status', 'published')
+            ->whereHas('videos', fn ($query) => $query->where('is_published', true))
+            ->when($featuredMaterial, fn ($query) => $query->whereKeyNot($featuredMaterial->getKey()))
+            ->orderBy('sort_order')
+            ->paginate(8)
+            ->through(function (Material $material) use ($user) {
+                $primaryVideo = $material->videos->first();
+
+                $material->setRelation('primary_video', $primaryVideo);
+                $material->setAttribute('can_access_primary_video', $primaryVideo
+                    ? $this->userCanAccessContent($user, $primaryVideo)
+                    : false);
+
+                return $material;
+            });
+
         return view('member.materials.index', [
-            'materials' => Material::query()
-                ->with(['mentor', 'videos'])
-                ->where('status', 'published')
-                ->orderByDesc('is_featured')
-                ->orderBy('sort_order')
-                ->paginate(8),
+            'materials' => $materials,
+            'featuredMaterial' => $featuredMaterial,
+            'featuredPrimaryVideo' => $featuredPrimaryVideo,
+            'featuredCanAccess' => $featuredCanAccess,
             'latestUpdates' => MaterialUpdate::query()
                 ->with('material')
                 ->where('is_published', true)
                 ->latest('published_at')
                 ->limit(3)
                 ->get(),
+            'materialStats' => [
+                'total_materials' => Material::query()->where('status', 'published')->count(),
+                'total_videos' => Video::query()->where('is_published', true)->count(),
+                'new_updates' => MaterialUpdate::query()
+                    ->where('is_published', true)
+                    ->whereDate('published_at', '>=', now()->subDays(7))
+                    ->count(),
+            ],
             'user' => $request->user(),
         ]);
     }
@@ -208,11 +254,24 @@ class MemberPortalController extends Controller
             'updates' => fn ($query) => $query->where('is_published', true)->latest('published_at'),
         ]);
 
-        $primaryVideo = $material->videos->first();
         $canAccessMaterial = $this->userCanAccessContent($request->user(), $material);
-        $canAccessPrimaryVideo = $primaryVideo
-            ? $this->userCanAccessContent($request->user(), $primaryVideo)
-            : false;
+        $selectedVideoId = $request->integer('video');
+
+        $videos = $material->videos->map(function (Video $video) use ($request): Video {
+            $canAccessVideo = $this->userCanAccessContent($request->user(), $video);
+
+            $video->setAttribute('can_access', $canAccessVideo);
+            $video->setAttribute('thumbnail_url', $video->youtube_video_id
+                ? "https://img.youtube.com/vi/{$video->youtube_video_id}/hqdefault.jpg"
+                : null);
+
+            return $video;
+        });
+
+        $material->setRelation('videos', $videos);
+
+        $primaryVideo = $videos->firstWhere('id', $selectedVideoId) ?: $videos->first();
+        $canAccessPrimaryVideo = $primaryVideo?->can_access ?? false;
 
         return view('member.materials.show', [
             'material' => $material,

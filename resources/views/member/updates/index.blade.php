@@ -1,11 +1,14 @@
 <x-member-layout title="Update Materi">
     <section class="page-stack">
-        <div class="page-hero is-centered">
+        <div class="section-header">
             <span class="section-pill">Daily Learning Updates</span>
-            <h1 class="page-title mt-4">Update Materi Terbaru</h1>
-            <p class="page-hero-copy">
+            <h1 class="section-header-title">Update Materi Terbaru</h1>
+            <p class="section-header-copy">
                 Ikuti perkembangan materi harian, video tambahan, dan pengumuman penting agar perjalanan belajar Anda selalu terarah.
             </p>
+            <div class="section-header-indicator">
+                <div class="section-header-indicator-dot"></div>
+            </div>
         </div>
 
         <div class="grid gap-4">

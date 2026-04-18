@@ -5,7 +5,7 @@ namespace App\Filament\Resources\Materials\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
+use App\Filament\Resources\Materials\MaterialResource;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -19,13 +19,13 @@ class MaterialsTable
         return $table
             ->columns([
                 TextColumn::make('program.title')
-                    ->label('Program')
+                    ->label('Kelas Materi')
                     ->searchable(),
                 TextColumn::make('mentor.name')
                     ->label('Mentor')
                     ->searchable(),
                 TextColumn::make('title')
-                    ->label('Judul')
+                    ->label('Materi')
                     ->searchable(),
                 TextColumn::make('slug')
                     ->label('Slug')
@@ -43,7 +43,7 @@ class MaterialsTable
                     ->badge()
                     ->searchable(),
                 TextColumn::make('access_type')
-                    ->label('Akses')
+                    ->label('Akses Materi')
                     ->badge()
                     ->searchable(),
                 TextColumn::make('price')
@@ -72,6 +72,7 @@ class MaterialsTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->recordUrl(fn ($record) => MaterialResource::getUrl('edit', ['record' => $record]))
             ->filters([
                 SelectFilter::make('status')
                     ->options([
@@ -90,7 +91,6 @@ class MaterialsTable
                     ->label('Materi Unggulan'),
             ])
             ->recordActions([
-                ViewAction::make(),
                 EditAction::make(),
             ])
             ->toolbarActions([
