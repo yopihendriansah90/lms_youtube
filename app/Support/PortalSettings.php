@@ -43,4 +43,40 @@ class PortalSettings
 
         return $matches[1] ?? null;
     }
+
+    public static function adminWhatsAppNumber(): ?string
+    {
+        $number = static::get('portal.admin_whatsapp_number');
+
+        if (blank($number)) {
+            return null;
+        }
+
+        $normalized = preg_replace('/[^\d]/', '', (string) $number);
+
+        if (blank($normalized)) {
+            return null;
+        }
+
+        if (str_starts_with($normalized, '0')) {
+            return '62'.substr($normalized, 1);
+        }
+
+        return $normalized;
+    }
+
+    public static function whatsappUrl(?string $message = null): ?string
+    {
+        $number = static::adminWhatsAppNumber();
+
+        if (blank($number)) {
+            return null;
+        }
+
+        $query = blank($message)
+            ? ''
+            : '?text='.rawurlencode((string) $message);
+
+        return "https://wa.me/{$number}{$query}";
+    }
 }

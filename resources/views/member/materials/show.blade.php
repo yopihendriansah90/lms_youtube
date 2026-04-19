@@ -76,8 +76,9 @@
                                 Video ini termasuk konten premium. Buka akses untuk menonton langsung dari portal member.
                             </p>
                             <div class="mt-5 flex flex-wrap justify-center gap-3">
-                                <button class="primary-btn">Buka Kunci Sekarang</button>
-                                <a href="{{ route('member.questions') }}" class="secondary-btn">Tanya Mentor</a>
+                                @if ($materialRequestAccessUrl)
+                                    <a href="{{ $materialRequestAccessUrl }}" target="_blank" rel="noopener noreferrer" class="request-access-btn">Minta Akses</a>
+                                @endif
                             </div>
                         </div>
                     @endif
@@ -184,7 +185,7 @@
                                     <div class="content-mini-panel compact">
                                         <p class="meta-copy">Aksi Member</p>
                                         <p class="mt-2 text-sm font-semibold text-white">
-                                            {{ $document->can_access ? 'Buka di tab baru atau simpan PDF ini.' : 'Ajukan unlock untuk membuka file PDF ini.' }}
+                                            {{ $document->can_access ? 'Buka di tab baru atau simpan PDF ini.' : 'Minta akses untuk membuka file PDF ini.' }}
                                         </p>
                                     </div>
                                 </div>
@@ -192,7 +193,9 @@
                                     @if ($document->download_url)
                                         <a href="{{ $document->download_url }}" target="_blank" rel="noopener noreferrer" class="primary-btn">Buka PDF</a>
                                     @else
-                                        <a href="{{ route('member.questions') }}" class="primary-btn">Ajukan Unlock</a>
+                                        @if ($materialRequestAccessUrl)
+                                            <a href="{{ $materialRequestAccessUrl }}" target="_blank" rel="noopener noreferrer" class="request-access-btn">Minta Akses</a>
+                                        @endif
                                     @endif
                                 </div>
                             </div>
@@ -261,7 +264,9 @@
                                 {{ $primaryVideo?->is($video) ? 'Video Sedang Diputar' : 'Lihat Video' }}
                             </a>
                             @unless ($video->can_access)
-                                <a href="{{ route('member.questions') }}" class="secondary-btn">Ajukan Unlock</a>
+                                @if ($video->request_access_url)
+                                    <a href="{{ $video->request_access_url }}" target="_blank" rel="noopener noreferrer" class="request-access-btn">Minta Akses</a>
+                                @endif
                             @endunless
                         </div>
                         </article>

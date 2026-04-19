@@ -4,12 +4,12 @@ namespace App\Filament\Pages;
 
 use App\Support\PortalSettings;
 use BackedEnum;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Pages\Page;
 use Filament\Notifications\Notification;
+use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -20,7 +20,7 @@ class HomeAppearanceSettings extends Page implements HasForms
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
-    protected static ?string $navigationLabel = 'Pengaturan Home';
+    protected static ?string $navigationLabel = 'Setting Web';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Pengaturan';
 
@@ -46,6 +46,7 @@ class HomeAppearanceSettings extends Page implements HasForms
             'active_meeting_title' => PortalSettings::get('portal.active_meeting_title', 'Workshop React Hooks - Batch 12'),
             'active_meeting_schedule' => PortalSettings::get('portal.active_meeting_schedule', 'Kamis, 23 Januari 2025'),
             'active_meeting_time' => PortalSettings::get('portal.active_meeting_time', '14:00 - 16:00 WIB'),
+            'admin_whatsapp_number' => PortalSettings::get('portal.admin_whatsapp_number'),
         ]);
     }
 
@@ -139,6 +140,18 @@ class HomeAppearanceSettings extends Page implements HasForms
                             ->live(onBlur: true),
                     ])
                     ->columns(2),
+                Section::make('Kontak Admin')
+                    ->description('Nomor WhatsApp ini dipakai tombol Minta Akses pada konten premium di halaman member.')
+                    ->schema([
+                        TextInput::make('admin_whatsapp_number')
+                            ->label('Nomor WhatsApp Admin')
+                            ->placeholder('081234567890 atau 6281234567890')
+                            ->helperText('Gunakan nomor aktif admin. Sistem akan mengubah format 08 menjadi 62 secara otomatis.')
+                            ->tel()
+                            ->maxLength(30)
+                            ->live(onBlur: true),
+                    ])
+                    ->columns(2),
             ]);
     }
 
@@ -163,6 +176,7 @@ class HomeAppearanceSettings extends Page implements HasForms
             'portal.active_meeting_title' => $data['active_meeting_title'],
             'portal.active_meeting_schedule' => $data['active_meeting_schedule'],
             'portal.active_meeting_time' => $data['active_meeting_time'],
+            'portal.admin_whatsapp_number' => blank($data['admin_whatsapp_number']) ? null : $data['admin_whatsapp_number'],
         ]);
 
         Notification::make()

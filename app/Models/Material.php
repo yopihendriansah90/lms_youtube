@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Storage;
 
 class Material extends Model
@@ -77,6 +78,11 @@ class Material extends Model
     public function questions(): HasMany
     {
         return $this->hasMany(Question::class);
+    }
+
+    public function contentUnlocks(): MorphMany
+    {
+        return $this->morphMany(ContentUnlock::class, 'unlockable');
     }
 
     public function getCoverUrlAttribute(): ?string

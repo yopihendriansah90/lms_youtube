@@ -16,6 +16,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class MemberPortalController extends Controller
@@ -243,6 +244,13 @@ class MemberPortalController extends Controller
 
     public function showMaterial(Request $request, Material $material): View
     {
+        $adminWhatsAppUrl = PortalSettings::whatsappUrl(
+            $this->buildAccessRequestMessage(
+                memberName: $request->user()->name,
+                materialTitle: $material->title,
+            )
+        );
+
         $material->load([
             'mentor',
             'videos' => fn ($query) => $query->where('is_published', true)->orderBy('sort_order'),
@@ -252,13 +260,22 @@ class MemberPortalController extends Controller
         $canAccessMaterial = $this->userCanAccessContent($request->user(), $material);
         $selectedVideoId = $request->integer('video');
 
-        $videos = $material->videos->map(function (Video $video) use ($request): Video {
+        $videos = $material->videos->map(function (Video $video) use ($request, $material): Video {
             $canAccessVideo = $this->userCanAccessContent($request->user(), $video);
 
             $video->setAttribute('can_access', $canAccessVideo);
             $video->setAttribute('thumbnail_url', $video->youtube_video_id
                 ? "https://img.youtube.com/vi/{$video->youtube_video_id}/hqdefault.jpg"
                 : null);
+            $video->setAttribute('request_access_url', $canAccessVideo
+                ? null
+                : PortalSettings::whatsappUrl(
+                    $this->buildAccessRequestMessage(
+                        memberName: $request->user()->name,
+                        materialTitle: $material->title,
+                        videoTitle: $video->title,
+                    )
+                ));
 
             return $video;
         });
@@ -289,6 +306,7 @@ class MemberPortalController extends Controller
             'primaryVideo' => $primaryVideo,
             'canAccessMaterial' => $canAccessMaterial,
             'canAccessPrimaryVideo' => $canAccessPrimaryVideo,
+            'materialRequestAccessUrl' => $adminWhatsAppUrl,
         ]);
     }
 
@@ -427,5 +445,27 @@ class MemberPortalController extends Controller
             ->exists();
 
         return $unlockExists;
+    }
+
+    protected function buildAccessRequestMessage(
+        string $memberName,
+        string $materialTitle,
+        ?string $videoTitle = null,
+    ): string {
+        $message = [
+            'Halo admin, saya ingin meminta akses ke materi premium.',
+            '',
+            'Nama member: '.$memberName,
+            'Materi: '.$materialTitle,
+        ];
+
+        if (filled($videoTitle)) {
+            $message[] = 'Video: '.$videoTitle;
+        }
+
+        $message[] = '';
+        $message[] = 'Mohon dibantu untuk proses aksesnya. Terima kasih.';
+
+        return Str::of(implode("\n", $message))->trim()->toString();
     }
 }

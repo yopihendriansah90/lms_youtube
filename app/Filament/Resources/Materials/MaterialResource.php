@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Materials;
 use App\Filament\Resources\Materials\Pages\CreateMaterial;
 use App\Filament\Resources\Materials\Pages\EditMaterial;
 use App\Filament\Resources\Materials\Pages\ListMaterials;
+use App\Filament\Resources\Materials\RelationManagers\MemberAccessRelationManager;
 use App\Filament\Resources\Materials\RelationManagers\PdfDocumentsRelationManager;
 use App\Filament\Resources\Materials\RelationManagers\VideosRelationManager;
 use App\Filament\Resources\Materials\Schemas\MaterialForm;
@@ -47,6 +48,7 @@ class MaterialResource extends Resource
         return [
             VideosRelationManager::class,
             PdfDocumentsRelationManager::class,
+            MemberAccessRelationManager::class,
         ];
     }
 
