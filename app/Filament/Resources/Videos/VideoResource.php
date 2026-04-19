@@ -18,6 +18,8 @@ class VideoResource extends Resource
 {
     protected static ?string $model = Video::class;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPlayCircle;
 
     protected static ?string $navigationLabel = 'Video Materi';

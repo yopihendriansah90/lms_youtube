@@ -88,6 +88,7 @@ class MaterialsTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('created_at', 'desc')
             ->recordUrl(fn ($record) => MaterialResource::getUrl('edit', ['record' => $record]))
             ->filters([
                 SelectFilter::make('status')

@@ -29,7 +29,7 @@ class MaterialResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Materi';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Konten Belajar';
+    protected static string|\UnitEnum|null $navigationGroup = null;
 
     protected static ?int $navigationSort = 2;
 
