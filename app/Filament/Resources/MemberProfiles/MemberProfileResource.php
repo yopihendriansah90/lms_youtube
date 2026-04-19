@@ -22,11 +22,11 @@ class MemberProfileResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
-    protected static ?string $navigationLabel = 'Data Member';
+    protected static ?string $navigationLabel = 'Member';
 
     protected static ?string $modelLabel = 'Member';
 
-    protected static ?string $pluralModelLabel = 'Data Member';
+    protected static ?string $pluralModelLabel = 'Member';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Master LMS';
 

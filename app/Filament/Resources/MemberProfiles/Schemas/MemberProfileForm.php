@@ -2,70 +2,68 @@
 
 namespace App\Filament\Resources\MemberProfiles\Schemas;
 
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
+use App\Models\MemberProfile;
+use App\Models\User;
+use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Str;
 
 class MemberProfileForm
 {
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
-                Section::make('Informasi Member')
+                Section::make('Tambah Member')
+                    ->description('Buat akun login member dengan cepat. Detail profil lainnya bisa dilengkapi pada update berikutnya.')
                     ->schema([
-                        Select::make('user_id')
-                            ->label('Akun User')
-                            ->relationship('user', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->required(),
-                        TextInput::make('phone')
-                            ->label('Nomor WhatsApp')
-                            ->tel()
-                            ->maxLength(30),
-                        FileUpload::make('avatar')
-                            ->label('Avatar')
-                            ->image()
-                            ->directory('members/avatars')
-                            ->imageEditor(),
-                        TextInput::make('occupation')
-                            ->label('Pekerjaan')
+                        TextInput::make('name')
+                            ->label('Nama Member')
+                            ->required()
                             ->maxLength(255),
-                        TextInput::make('city')
-                            ->label('Kota')
-                            ->maxLength(255),
-                        TextInput::make('province')
-                            ->label('Provinsi')
-                            ->maxLength(255),
-                        DatePicker::make('birth_date')
-                            ->label('Tanggal Lahir')
-                            ->native(false),
-                        Select::make('gender')
-                            ->label('Jenis Kelamin')
-                            ->options([
-                                'male' => 'Laki-laki',
-                                'female' => 'Perempuan',
+                        TextInput::make('email')
+                            ->label('Email Login')
+                            ->email()
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(
+                                table: User::class,
+                                column: 'email',
+                                ignorable: fn (?MemberProfile $record): ?User => $record?->user,
+                            )
+                            ->validationMessages([
+                                'unique' => 'Email ini sudah dipakai akun lain.',
                             ]),
-                        DateTimePicker::make('joined_at')
-                            ->label('Tanggal Bergabung')
-                            ->seconds(false),
-                        Toggle::make('is_active')
-                            ->label('Aktif')
-                            ->default(true)
-                            ->required(),
-                        Textarea::make('bio')
-                            ->label('Bio Singkat')
-                            ->rows(4)
-                            ->columnSpanFull(),
+                        TextInput::make('password')
+                            ->label('Password')
+                            ->password()
+                            ->revealable()
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->minLength(8)
+                            ->maxLength(255)
+                            ->helperText('Gunakan password minimal 8 karakter, atau klik tombol generate agar sistem membuat password yang aman.')
+                            ->suffixAction(
+                                Action::make('generatePassword')
+                                    ->icon('heroicon-o-sparkles')
+                                    ->tooltip('Generate password')
+                                    ->action(function (Set $set): void {
+                                        $set('password', static::generatePassword());
+                                    }),
+                                isInline: true,
+                            )
+                            ->dehydrated(fn (?string $state): bool => filled($state)),
                     ])
-                    ->columns(2),
+                    ->columnSpanFull()
+                    ->columns(1),
             ]);
+    }
+
+    protected static function generatePassword(): string
+    {
+        return Str::password(10, letters: true, numbers: true, symbols: false, spaces: false);
     }
 }
