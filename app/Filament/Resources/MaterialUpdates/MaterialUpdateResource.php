@@ -20,6 +20,8 @@ class MaterialUpdateResource extends Resource
 {
     protected static ?string $model = MaterialUpdate::class;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSparkles;
 
     protected static ?string $navigationLabel = 'Update Materi';

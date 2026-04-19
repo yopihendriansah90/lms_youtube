@@ -11,6 +11,11 @@ class EditMaterial extends EditRecord
 {
     protected static string $resource = MaterialResource::class;
 
+    public function getSubheading(): ?string
+    {
+        return 'Lengkapi detail materi ini, lalu tambahkan video pembelajaran, lampiran PDF, dan update materi dari halaman yang sama.';
+    }
+
     protected function getHeaderActions(): array
     {
         return [

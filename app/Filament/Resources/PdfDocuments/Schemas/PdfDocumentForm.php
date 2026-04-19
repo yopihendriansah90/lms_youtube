@@ -2,14 +2,15 @@
 
 namespace App\Filament\Resources\PdfDocuments\Schemas;
 
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\SpatieLaravelMediaLibraryPlugin\Forms\Components\SpatieMediaLibraryFileUpload;
 
 class PdfDocumentForm
 {
@@ -29,14 +30,9 @@ class PdfDocumentForm
                             ->label('Judul Dokumen')
                             ->required()
                             ->maxLength(255),
-                        Select::make('access_type')
-                            ->label('Tipe Akses')
-                            ->options([
-                                'free' => 'Gratis',
-                                'paid' => 'Berbayar',
-                            ])
+                        Hidden::make('access_type')
                             ->default('free')
-                            ->required(),
+                            ->dehydrated(true),
                         Toggle::make('is_published')
                             ->label('Publikasikan')
                             ->default(false)

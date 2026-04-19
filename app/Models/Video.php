@@ -37,6 +37,13 @@ class Video extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::saving(function (Video $video): void {
+            $video->price = 0;
+        });
+    }
+
     public function material(): BelongsTo
     {
         return $this->belongsTo(Material::class);

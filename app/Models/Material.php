@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Material extends Model
 {
@@ -76,5 +77,29 @@ class Material extends Model
     public function questions(): HasMany
     {
         return $this->hasMany(Question::class);
+    }
+
+    public function getCoverUrlAttribute(): ?string
+    {
+        if (! filled($this->thumbnail)) {
+            return null;
+        }
+
+        if (str_starts_with($this->thumbnail, 'http://') || str_starts_with($this->thumbnail, 'https://')) {
+            return $this->thumbnail;
+        }
+
+        if (Storage::disk('public')->exists($this->thumbnail)) {
+            return Storage::disk('public')->url($this->thumbnail);
+        }
+
+        if (Storage::disk('local')->exists($this->thumbnail)) {
+            Storage::disk('public')->makeDirectory(dirname($this->thumbnail));
+            Storage::disk('public')->put($this->thumbnail, Storage::disk('local')->get($this->thumbnail));
+
+            return Storage::disk('public')->url($this->thumbnail);
+        }
+
+        return Storage::disk('public')->url($this->thumbnail);
     }
 }

@@ -18,6 +18,8 @@ class ProgramResource extends Resource
 {
     protected static ?string $model = Program::class;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedFolder;
 
     protected static ?string $navigationLabel = 'Kelas Materi';

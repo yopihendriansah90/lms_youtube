@@ -32,6 +32,7 @@
 @layer base {
     html {
         color-scheme: dark;
+        scroll-behavior: smooth;
     }
 
     :root {
@@ -60,6 +61,50 @@
 
     .surface-card {
         @apply rounded-[24px] border border-white/8 bg-[linear-gradient(180deg,rgba(18,24,38,0.96),rgba(10,14,22,0.96))] shadow-[0_18px_55px_rgba(0,0,0,0.28)];
+    }
+
+    .video-player-stage {
+        position: relative;
+        scroll-margin-top: 5.5rem;
+        background:
+            radial-gradient(circle at top right, rgba(63, 115, 244, 0.16), transparent 28%),
+            radial-gradient(circle at left 20%, rgba(64, 200, 255, 0.1), transparent 24%),
+            linear-gradient(180deg, rgba(18, 24, 38, 0.98), rgba(10, 14, 22, 0.98));
+    }
+
+    .video-player-stage:target {
+        animation: video-player-focus 900ms ease-out;
+    }
+
+    .video-player-shell {
+        position: relative;
+        z-index: 1;
+        box-shadow:
+            0 24px 60px rgba(0, 0, 0, 0.34),
+            inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(12px);
+    }
+
+    .video-player-orb {
+        position: absolute;
+        top: -2.5rem;
+        right: -2rem;
+        width: 10rem;
+        height: 10rem;
+        border-radius: 9999px;
+        background: rgba(63, 115, 244, 0.16);
+        filter: blur(48px);
+        pointer-events: none;
+    }
+
+    .video-player-orb.is-secondary {
+        top: auto;
+        right: auto;
+        bottom: -2rem;
+        left: -1rem;
+        width: 8rem;
+        height: 8rem;
+        background: rgba(64, 200, 255, 0.12);
     }
 
     .page-stack {
@@ -204,6 +249,10 @@
         @apply text-[11px] leading-5 font-semibold tracking-[0.16em] uppercase text-brand-200;
     }
 
+    .meta-copy.compact {
+        @apply text-[10px] leading-4 tracking-[0.14em];
+    }
+
     .muted-copy {
         @apply text-sm leading-6 font-medium text-white/52;
     }
@@ -218,6 +267,10 @@
 
     .inline-chip {
         @apply inline-flex items-center rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[11px] font-semibold text-white/68;
+    }
+
+    .inline-chip.compact {
+        @apply px-2.5 py-1 text-[10px];
     }
 
     .status-chip {
@@ -282,6 +335,22 @@
 
     .feature-list-card {
         @apply rounded-[24px] border border-white/8 bg-white/[0.02] p-5;
+    }
+
+    .content-mini-panel {
+        @apply rounded-[20px] border border-white/8 bg-white/[0.025] p-4;
+    }
+
+    .content-mini-panel.compact {
+        @apply p-3.5;
+    }
+
+    .document-card {
+        @apply rounded-[24px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)];
+    }
+
+    .document-meta-grid {
+        @apply mt-4 grid gap-3 sm:grid-cols-2;
     }
 
     .card-link {
@@ -432,11 +501,11 @@
     }
 
     .materials-hero-media {
-        @apply aspect-[16/10] sm:aspect-[16/9];
+        @apply aspect-[16/9] lg:aspect-[16/8];
     }
 
     .materials-hero-lock {
-        @apply aspect-[16/10] px-5 sm:aspect-[16/9] sm:px-6;
+        @apply aspect-[16/9] px-5 lg:aspect-[16/8] sm:px-6;
     }
 
     .materials-mobile-grid {
@@ -448,7 +517,7 @@
     }
 
     .materials-card-media {
-        @apply aspect-[16/10] overflow-hidden rounded-[18px] border border-white/8 bg-[radial-gradient(circle_at_top,rgba(63,115,244,0.14),transparent_38%),rgba(255,255,255,0.03)] sm:rounded-[22px];
+        @apply aspect-video overflow-hidden rounded-[18px] border border-white/8 bg-[radial-gradient(circle_at_top,rgba(63,115,244,0.14),transparent_38%),rgba(255,255,255,0.03)] sm:rounded-[22px];
     }
 
     .materials-card-title {
@@ -541,5 +610,22 @@
 
     .hero-orb {
         @apply absolute rounded-full blur-3xl;
+    }
+}
+
+@keyframes video-player-focus {
+    0% {
+        transform: translateY(18px) scale(0.985);
+        box-shadow: 0 0 0 rgba(63, 115, 244, 0);
+    }
+
+    55% {
+        transform: translateY(0) scale(1);
+        box-shadow: 0 0 0 1px rgba(63, 115, 244, 0.35);
+    }
+
+    100% {
+        transform: translateY(0) scale(1);
+        box-shadow: 0 0 0 rgba(63, 115, 244, 0);
     }
 }

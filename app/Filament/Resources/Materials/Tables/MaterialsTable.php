@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources\Materials\Tables;
 
+use App\Filament\Resources\Materials\MaterialResource;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use App\Filament\Resources\Materials\MaterialResource;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -18,41 +18,57 @@ class MaterialsTable
     {
         return $table
             ->columns([
-                TextColumn::make('program.title')
-                    ->label('Kelas Materi')
-                    ->searchable(),
-                TextColumn::make('mentor.name')
-                    ->label('Mentor')
-                    ->searchable(),
                 TextColumn::make('title')
                     ->label('Materi')
-                    ->searchable(),
-                TextColumn::make('slug')
-                    ->label('Slug')
-                    ->searchable(),
+                    ->searchable()
+                    ->description(fn ($record): string => collect([
+                        $record->program?->title,
+                        $record->mentor?->name,
+                    ])->filter()->join(' • '))
+                    ->wrap(),
                 TextColumn::make('excerpt')
                     ->label('Ringkasan')
                     ->limit(40)
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->searchable(),
+                    ->searchable()
+                    ->color(fn (string $state): string => match ($state) {
+                        'published' => 'success',
+                        'review' => 'warning',
+                        'archived' => 'gray',
+                        default => 'info',
+                    }),
+                TextColumn::make('access_type')
+                    ->label('Akses')
+                    ->badge()
+                    ->searchable()
+                    ->color(fn (string $state): string => $state === 'paid' ? 'warning' : 'success'),
+                TextColumn::make('price')
+                    ->label('Harga')
+                    ->formatStateUsing(fn ($state) => 'Rp '.number_format((float) $state, 0, ',', '.'))
+                    ->sortable(),
+                TextColumn::make('videos_count')
+                    ->counts('videos')
+                    ->label('Video')
+                    ->badge()
+                    ->color('info'),
+                TextColumn::make('pdf_documents_count')
+                    ->counts('pdfDocuments')
+                    ->label('PDF')
+                    ->badge()
+                    ->color('gray'),
+                IconColumn::make('is_featured')
+                    ->label('Unggulan')
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('visibility')
                     ->label('Visibilitas')
                     ->badge()
-                    ->searchable(),
-                TextColumn::make('access_type')
-                    ->label('Akses Materi')
-                    ->badge()
-                    ->searchable(),
-                TextColumn::make('price')
-                    ->label('Harga')
-                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format((float) $state, 0, ',', '.'))
-                    ->sortable(),
-                IconColumn::make('is_featured')
-                    ->label('Unggulan')
-                    ->boolean(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('published_at')
                     ->label('Publish')
                     ->dateTime()

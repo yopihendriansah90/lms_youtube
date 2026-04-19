@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -29,6 +30,13 @@ class PdfDocument extends Model implements HasMedia
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::saving(function (PdfDocument $document): void {
+            $document->access_type = 'free';
+        });
+    }
+
     public function material(): BelongsTo
     {
         return $this->belongsTo(Material::class);
@@ -42,5 +50,16 @@ class PdfDocument extends Model implements HasMedia
     public function orderItems(): MorphMany
     {
         return $this->morphMany(OrderItem::class, 'purchasable');
+    }
+
+    public function downloadFileName(): string
+    {
+        $baseName = Str::of($this->title)
+            ->replaceMatches('/[\\\\\\/:*?"<>|]+/', ' ')
+            ->squish()
+            ->trim(' .')
+            ->value();
+
+        return filled($baseName) ? $baseName.'.pdf' : 'dokumen.pdf';
     }
 }

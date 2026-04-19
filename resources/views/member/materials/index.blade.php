@@ -7,16 +7,27 @@
         @if ($featuredMaterial && $featuredPrimaryVideo)
             <a href="{{ route('member.materials.show', $featuredMaterial) }}" class="materials-hero-frame block">
                 <div class="overflow-hidden rounded-[24px] border border-white/8 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02),transparent_52%),rgba(255,255,255,0.01)] shadow-[0_20px_40px_rgba(0,0,0,0.22)]">
-                    @if ($featuredCanAccess)
-                        <div class="materials-hero-media">
-                            <iframe
-                                class="h-full w-full"
-                                src="https://www.youtube.com/embed/{{ $featuredPrimaryVideo->youtube_video_id }}"
-                                title="{{ $featuredPrimaryVideo->title }}"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                referrerpolicy="strict-origin-when-cross-origin"
-                                allowfullscreen
-                            ></iframe>
+                    @if ($featuredMaterial->cover_url)
+                        <div class="materials-hero-media relative">
+                            <img
+                                src="{{ $featuredMaterial->cover_url }}"
+                                alt="{{ $featuredMaterial->title }}"
+                                class="h-full w-full object-cover"
+                                loading="lazy"
+                            >
+                            <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,8,13,0.12),rgba(6,8,13,0.74))]"></div>
+                            <div class="absolute inset-x-0 bottom-0 p-6 sm:p-7">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="status-chip {{ $featuredMaterial->access_type === 'free' ? 'is-free' : 'is-paid' }}">
+                                        {{ $featuredMaterial->access_type === 'free' ? 'Gratis' : 'Premium' }}
+                                    </span>
+                                    @if ($featuredPrimaryVideo->access_type === 'free')
+                                        <span class="inline-chip">Video pembuka gratis</span>
+                                    @endif
+                                </div>
+                                <h2 class="materials-card-title mt-4 text-left">{{ $featuredMaterial->title }}</h2>
+                                <p class="body-copy mt-3 max-w-2xl text-left">{{ $featuredMaterial->excerpt ?: 'Materi pilihan untuk mulai belajar dari cover materi utama.' }}</p>
+                            </div>
                         </div>
                     @else
                         <div class="materials-hero-lock flex flex-col items-center justify-center text-center">
@@ -34,7 +45,14 @@
             @if ($featuredMaterial)
                 <a href="{{ route('member.materials.show', $featuredMaterial) }}" class="materials-mobile-card text-center transition hover:border-white/14 hover:bg-white/[0.03]">
                     <div class="materials-card-media mb-3">
-                        @if ($featuredPrimaryVideo?->youtube_video_id)
+                        @if ($featuredMaterial->cover_url)
+                            <img
+                                src="{{ $featuredMaterial->cover_url }}"
+                                alt="{{ $featuredMaterial->title }}"
+                                class="h-full w-full object-cover"
+                                loading="lazy"
+                            >
+                        @elseif ($featuredPrimaryVideo?->youtube_video_id)
                             <img
                                 src="https://img.youtube.com/vi/{{ $featuredPrimaryVideo->youtube_video_id }}/hqdefault.jpg"
                                 alt="{{ $featuredMaterial->title }}"
@@ -56,7 +74,14 @@
             @foreach ($materials as $material)
                 <a href="{{ route('member.materials.show', $material) }}" class="materials-mobile-card text-center transition hover:border-white/14 hover:bg-white/[0.03]">
                     <div class="materials-card-media mb-3">
-                        @if ($material->primary_video?->youtube_video_id)
+                        @if ($material->cover_url)
+                            <img
+                                src="{{ $material->cover_url }}"
+                                alt="{{ $material->title }}"
+                                class="h-full w-full object-cover"
+                                loading="lazy"
+                            >
+                        @elseif ($material->primary_video?->youtube_video_id)
                             <img
                                 src="https://img.youtube.com/vi/{{ $material->primary_video->youtube_video_id }}/hqdefault.jpg"
                                 alt="{{ $material->title }}"
@@ -70,34 +95,17 @@
                         @endif
                     </div>
                     <h2 class="materials-card-title">{{ $material->title }}</h2>
+                    <div class="mt-2 flex justify-center">
+                        <span class="status-chip {{ $material->access_type === 'free' ? 'is-free' : 'is-paid' }}">
+                            {{ $material->access_type === 'free' ? 'Gratis' : 'Premium' }}
+                        </span>
+                    </div>
                     <p class="materials-card-action">
                         {{ $material->can_access_primary_video ? 'Akses Materi' : 'Buka Kunci Materi' }}
                     </p>
                 </a>
             @endforeach
         </div>
-
-        @if ($latestUpdates->isNotEmpty())
-            <div class="rich-card materials-updates-shell">
-                <div class="flex items-center justify-between gap-4">
-                    <div>
-                        <p class="meta-copy">Update Materi</p>
-                        <h2 class="materials-section-title mt-2">Update Terbaru</h2>
-                    </div>
-                    <a href="{{ route('member.updates') }}" class="card-link">Lihat semua</a>
-                </div>
-
-                <div class="update-rail materials-update-rail mt-4">
-                    @foreach ($latestUpdates as $update)
-                        <article class="update-rail-card">
-                            <p class="meta-copy">{{ $update->material?->title ?? 'Materi umum' }}</p>
-                            <h3 class="card-heading mt-3">{{ $update->title }}</h3>
-                            <p class="body-copy mt-2">{{ \Illuminate\Support\Str::limit(strip_tags((string) $update->content), 140) }}</p>
-                        </article>
-                    @endforeach
-                </div>
-            </div>
-        @endif
 
         <div class="pagination-shell">
             {{ $materials->links() }}

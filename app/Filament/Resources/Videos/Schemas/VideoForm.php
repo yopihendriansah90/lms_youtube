@@ -3,14 +3,14 @@
 namespace App\Filament\Resources\Videos\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Str;
 
 class VideoForm
 {
@@ -26,11 +26,6 @@ class VideoForm
                             ->searchable()
                             ->preload()
                             ->required(),
-                        Select::make('section_id')
-                            ->label('Bagian Materi')
-                            ->relationship('section', 'title')
-                            ->searchable()
-                            ->preload(),
                         TextInput::make('title')
                             ->label('Judul Video')
                             ->required()
@@ -51,11 +46,8 @@ class VideoForm
                                     $set('youtube_video_id', $matches[1]);
                                 }
                             }),
-                        TextInput::make('youtube_video_id')
-                            ->label('YouTube Video ID')
-                            ->required()
-                            ->maxLength(32)
-                            ->helperText('Akan diisi otomatis jika URL valid.'),
+                        Hidden::make('youtube_video_id')
+                            ->required(),
                         TextInput::make('duration_in_seconds')
                             ->label('Durasi (detik)')
                             ->numeric(),
@@ -68,20 +60,17 @@ class VideoForm
                 Section::make('Akses dan Publish')
                     ->schema([
                         Select::make('access_type')
-                            ->label('Tipe Akses')
+                            ->label('Akses Video')
                             ->options([
-                                'free' => 'Gratis',
-                                'paid' => 'Berbayar',
+                                'free' => 'Free',
+                                'paid' => 'Premium',
                             ])
                             ->default('free')
-                            ->required(),
-                        TextInput::make('price')
-                            ->label('Harga Unlock')
-                            ->numeric()
+                            ->required()
+                            ->helperText('Gunakan Free untuk video terbuka dan Premium untuk video yang mengikuti aturan akses materi.'),
+                        Hidden::make('price')
                             ->default(0)
-                            ->prefix('Rp')
-                            ->helperText('Isi 0 untuk video gratis. Jika berbayar, akses akun diatur melalui unlock konten.')
-                            ->required(),
+                            ->dehydrated(true),
                         Toggle::make('is_preview')
                             ->label('Video Preview')
                             ->default(false)

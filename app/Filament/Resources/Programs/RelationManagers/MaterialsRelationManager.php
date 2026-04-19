@@ -10,8 +10,8 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
@@ -59,7 +59,7 @@ class MaterialsRelationManager extends RelationManager
                             ->rows(5)
                             ->columnSpanFull(),
                         FileUpload::make('thumbnail')
-                            ->label('Thumbnail Materi')
+                            ->label('Cover Materi')
                             ->image()
                             ->disk('public')
                             ->directory('materials/thumbnails')
@@ -130,7 +130,7 @@ class MaterialsRelationManager extends RelationManager
                     ->badge(),
                 TextColumn::make('price')
                     ->label('Harga')
-                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format((float) $state, 0, ',', '.')),
+                    ->formatStateUsing(fn ($state) => 'Rp '.number_format((float) $state, 0, ',', '.')),
                 IconColumn::make('is_featured')
                     ->label('Unggulan')
                     ->boolean(),

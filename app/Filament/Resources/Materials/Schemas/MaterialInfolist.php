@@ -31,7 +31,7 @@ class MaterialInfolist
                     ->placeholder('-')
                     ->columnSpanFull(),
                 TextEntry::make('thumbnail')
-                    ->label('Thumbnail')
+                    ->label('Cover Materi')
                     ->placeholder('-'),
                 TextEntry::make('status')
                     ->label('Status'),
@@ -41,7 +41,7 @@ class MaterialInfolist
                     ->label('Akses Materi'),
                 TextEntry::make('price')
                     ->label('Harga')
-                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format((float) $state, 0, ',', '.')),
+                    ->formatStateUsing(fn ($state) => 'Rp '.number_format((float) $state, 0, ',', '.')),
                 TextEntry::make('currency')
                     ->label('Mata Uang'),
                 IconEntry::make('is_featured')

@@ -6,6 +6,7 @@ use App\Models\ContentUnlock;
 use App\Models\Material;
 use App\Models\MaterialUpdate;
 use App\Models\MentorProfile;
+use App\Models\PdfDocument;
 use App\Models\Question;
 use App\Models\User;
 use App\Models\Video;
@@ -15,6 +16,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class MemberPortalController extends Controller
 {
@@ -78,7 +80,7 @@ class MemberPortalController extends Controller
                 'icon' => 'heroicon-o-book-open',
                 'accent' => 'from-brand-500/20 via-brand-500/6 to-transparent',
                 'iconWrap' => 'bg-brand-500/16 text-brand-200',
-                'badge' => $newUpdatesCount > 0 ? $newUpdatesCount . ' baru' : null,
+                'badge' => $newUpdatesCount > 0 ? $newUpdatesCount.' baru' : null,
             ],
             [
                 'title' => 'Tanya Jawab',
@@ -227,12 +229,6 @@ class MemberPortalController extends Controller
             'featuredMaterial' => $featuredMaterial,
             'featuredPrimaryVideo' => $featuredPrimaryVideo,
             'featuredCanAccess' => $featuredCanAccess,
-            'latestUpdates' => MaterialUpdate::query()
-                ->with('material')
-                ->where('is_published', true)
-                ->latest('published_at')
-                ->limit(3)
-                ->get(),
             'materialStats' => [
                 'total_materials' => Material::query()->where('status', 'published')->count(),
                 'total_videos' => Video::query()->where('is_published', true)->count(),
@@ -251,7 +247,6 @@ class MemberPortalController extends Controller
             'mentor',
             'videos' => fn ($query) => $query->where('is_published', true)->orderBy('sort_order'),
             'pdfDocuments' => fn ($query) => $query->where('is_published', true)->orderBy('sort_order'),
-            'updates' => fn ($query) => $query->where('is_published', true)->latest('published_at'),
         ]);
 
         $canAccessMaterial = $this->userCanAccessContent($request->user(), $material);
@@ -270,6 +265,22 @@ class MemberPortalController extends Controller
 
         $material->setRelation('videos', $videos);
 
+        $pdfDocuments = $material->pdfDocuments->map(function (PdfDocument $document) use ($request, $material): PdfDocument {
+            $canAccessDocument = $this->userCanAccessContent($request->user(), $document);
+            $media = $document->getFirstMedia('documents');
+
+            $document->setAttribute('access_type', 'free');
+            $document->setAttribute('can_access', $canAccessDocument);
+            $document->setAttribute('download_url', $canAccessDocument && $media
+                ? route('member.materials.documents.show', ['material' => $material, 'document' => $document])
+                : null);
+            $document->setAttribute('file_name', $media ? $document->downloadFileName() : null);
+
+            return $document;
+        });
+
+        $material->setRelation('pdfDocuments', $pdfDocuments);
+
         $primaryVideo = $videos->firstWhere('id', $selectedVideoId) ?: $videos->first();
         $canAccessPrimaryVideo = $primaryVideo?->can_access ?? false;
 
@@ -279,6 +290,29 @@ class MemberPortalController extends Controller
             'canAccessMaterial' => $canAccessMaterial,
             'canAccessPrimaryVideo' => $canAccessPrimaryVideo,
         ]);
+    }
+
+    public function showPdfDocument(Request $request, Material $material, PdfDocument $document): BinaryFileResponse|RedirectResponse
+    {
+        abort_unless($document->material_id === $material->id, 404);
+        abort_unless($document->is_published, 404);
+
+        if (! $this->userCanAccessContent($request->user(), $document)) {
+            return redirect()
+                ->route('member.materials.show', $material)
+                ->with('status', 'Dokumen ini masih terkunci. Silakan buka akses materi premium terlebih dahulu.');
+        }
+
+        $media = $document->getFirstMedia('documents');
+
+        abort_unless($media !== null, 404);
+
+        return response()->file(
+            $media->getPath(),
+            [
+                'Content-Disposition' => 'inline; filename="'.$document->downloadFileName().'"',
+            ]
+        );
     }
 
     public function zoomRecords(Request $request): View
@@ -335,30 +369,19 @@ class MemberPortalController extends Controller
         return back()->with('status', 'Pertanyaan berhasil dikirim ke mentor.');
     }
 
-    public function updates(): View
-    {
-        return view('member.updates.index', [
-            'updates' => MaterialUpdate::query()
-                ->with('material')
-                ->where('is_published', true)
-                ->latest('published_at')
-                ->paginate(10),
-        ]);
-    }
-
-    protected function userCanAccessContent(User $user, Material|Video|ZoomRecord $content): bool
+    protected function userCanAccessContent(User $user, Material|Video|ZoomRecord|PdfDocument $content): bool
     {
         if ($user->hasAnyRole(['super_admin', 'admin', 'mentor'])) {
+            return true;
+        }
+
+        if ($content instanceof PdfDocument) {
             return true;
         }
 
         $accessType = $content->access_type ?? 'free';
 
         if ($accessType === 'free') {
-            return true;
-        }
-
-        if ($content instanceof Video && $content->is_preview) {
             return true;
         }
 
@@ -376,6 +399,14 @@ class MemberPortalController extends Controller
                     });
 
                 if ($content instanceof Video) {
+                    $query->orWhere(function ($nested) use ($content): void {
+                        $nested
+                            ->where('unlockable_type', Material::class)
+                            ->where('unlockable_id', $content->material_id);
+                    });
+                }
+
+                if ($content instanceof PdfDocument) {
                     $query->orWhere(function ($nested) use ($content): void {
                         $nested
                             ->where('unlockable_type', Material::class)

@@ -2,12 +2,11 @@
 
 namespace App\Filament\Resources\Materials;
 
-use App\Filament\Resources\Materials\RelationManagers\MaterialUpdatesRelationManager;
-use App\Filament\Resources\Materials\RelationManagers\PdfDocumentsRelationManager;
-use App\Filament\Resources\Materials\RelationManagers\VideosRelationManager;
 use App\Filament\Resources\Materials\Pages\CreateMaterial;
 use App\Filament\Resources\Materials\Pages\EditMaterial;
 use App\Filament\Resources\Materials\Pages\ListMaterials;
+use App\Filament\Resources\Materials\RelationManagers\PdfDocumentsRelationManager;
+use App\Filament\Resources\Materials\RelationManagers\VideosRelationManager;
 use App\Filament\Resources\Materials\Schemas\MaterialForm;
 use App\Filament\Resources\Materials\Tables\MaterialsTable;
 use App\Models\Material;
@@ -48,7 +47,6 @@ class MaterialResource extends Resource
         return [
             VideosRelationManager::class,
             PdfDocumentsRelationManager::class,
-            MaterialUpdatesRelationManager::class,
         ];
     }
 

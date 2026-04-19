@@ -11,12 +11,12 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\SpatieLaravelMediaLibraryPlugin\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -68,6 +68,7 @@ class MaterialUpdatesRelationManager extends RelationManager
                             ->content('Tambahkan file pendukung update materi langsung dari halaman materi ini.')
                             ->columnSpanFull(),
                     ])
+                    ->columnSpanFull()
                     ->columns(2),
             ]);
     }

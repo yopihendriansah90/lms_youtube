@@ -6,11 +6,11 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
@@ -30,16 +30,20 @@ class VideosRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                Section::make('Video Materi')
+                Section::make('Video Pembelajaran')
+                    ->description('Tambahkan video YouTube yang menjadi isi utama materi ini.')
                     ->schema([
                         TextInput::make('title')
                             ->label('Judul Video')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->placeholder('Contoh: Cara Menentukan Niche Channel')
+                            ->helperText('Judul ini akan tampil pada daftar video di halaman detail materi.'),
                         TextInput::make('youtube_url')
                             ->label('URL YouTube')
                             ->url()
                             ->required()
+                            ->placeholder('https://www.youtube.com/watch?v=...')
                             ->live(onBlur: true)
                             ->afterStateUpdated(function (Set $set, ?string $state): void {
                                 if (blank($state)) {
@@ -51,52 +55,54 @@ class VideosRelationManager extends RelationManager
                                 if (isset($matches[1])) {
                                     $set('youtube_video_id', $matches[1]);
                                 }
-                            }),
-                        TextInput::make('youtube_video_id')
-                            ->label('YouTube Video ID')
-                            ->required()
-                            ->maxLength(32),
-                        Select::make('section_id')
-                            ->label('Bagian Materi')
-                            ->relationship('section', 'title')
-                            ->searchable()
-                            ->preload(),
+                            })
+                            ->helperText('Tempel link YouTube, lalu sistem akan mengisi Video ID secara otomatis.'),
+                        Hidden::make('youtube_video_id')
+                            ->required(),
                         TextInput::make('duration_in_seconds')
                             ->label('Durasi (detik)')
-                            ->numeric(),
+                            ->numeric()
+                            ->helperText('Opsional. Cocok diisi jika ingin menampilkan durasi video secara akurat.'),
                         Textarea::make('description')
                             ->label('Deskripsi')
                             ->rows(4)
+                            ->helperText('Jelaskan inti pembahasan video ini secara singkat.')
                             ->columnSpanFull(),
                         Select::make('access_type')
-                            ->label('Tipe Akses')
+                            ->label('Akses Video')
                             ->options([
-                                'free' => 'Gratis',
-                                'paid' => 'Berbayar',
+                                'free' => 'Free',
+                                'paid' => 'Premium',
                             ])
                             ->default('free')
-                            ->required(),
-                        TextInput::make('price')
-                            ->label('Harga Unlock')
-                            ->numeric()
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(function (Set $set, ?string $state): void {
+                                $set('price', 0);
+                            })
+                            ->helperText('Gunakan Free untuk video terbuka dan Premium untuk video yang mengikuti aturan akses materi.'),
+                        Hidden::make('price')
                             ->default(0)
-                            ->prefix('Rp')
-                            ->required(),
+                            ->dehydrated(true),
                         Toggle::make('is_preview')
                             ->label('Preview')
-                            ->default(false),
+                            ->default(false)
+                            ->helperText('Aktifkan jika video ini boleh ditonton sebagai cuplikan walau akses premium.'),
                         Toggle::make('is_published')
                             ->label('Publikasikan')
-                            ->default(false),
+                            ->default(false)
+                            ->helperText('Video hanya tampil di portal member jika sudah dipublikasikan.'),
                         DateTimePicker::make('published_at')
                             ->label('Tanggal Publish')
                             ->seconds(false),
                         TextInput::make('sort_order')
-                            ->label('Urutan')
+                            ->label('Urutan Video')
                             ->numeric()
                             ->default(0)
-                            ->required(),
+                            ->required()
+                            ->helperText('Angka lebih kecil akan ditampilkan lebih dulu.'),
                     ])
+                    ->columnSpanFull()
                     ->columns(2),
             ]);
     }
@@ -107,28 +113,33 @@ class VideosRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('title')
                     ->label('Judul Video')
-                    ->searchable(),
-                TextColumn::make('youtube_video_id')
-                    ->label('Video ID'),
+                    ->searchable()
+                    ->wrap(),
                 TextColumn::make('access_type')
                     ->label('Akses')
-                    ->badge(),
+                    ->badge()
+                    ->color(fn (string $state): string => $state === 'paid' ? 'warning' : 'success'),
                 IconColumn::make('is_preview')
                     ->label('Preview')
                     ->boolean(),
                 IconColumn::make('is_published')
                     ->label('Publish')
                     ->boolean(),
+                TextColumn::make('published_at')
+                    ->label('Tayang')
+                    ->dateTime('d M Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('sort_order')
                     ->label('Urutan')
                     ->numeric()
                     ->sortable(),
             ])
             ->headerActions([
-                CreateAction::make(),
+                CreateAction::make()
+                    ->label('Tambah Video'),
             ])
             ->recordActions([
-                ViewAction::make(),
                 EditAction::make(),
                 DeleteAction::make(),
             ])
