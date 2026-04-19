@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
+use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -100,5 +100,15 @@ class User extends Authenticatable implements FilamentUser
     public function contentUnlocks(): HasMany
     {
         return $this->hasMany(ContentUnlock::class);
+    }
+
+    public function materialPayments(): HasMany
+    {
+        return $this->hasMany(MaterialPayment::class);
+    }
+
+    public function verifiedMaterialPayments(): HasMany
+    {
+        return $this->hasMany(MaterialPayment::class, 'verified_by');
     }
 }

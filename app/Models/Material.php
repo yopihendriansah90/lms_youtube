@@ -80,6 +80,11 @@ class Material extends Model
         return $this->hasMany(Question::class);
     }
 
+    public function materialPayments(): HasMany
+    {
+        return $this->hasMany(MaterialPayment::class);
+    }
+
     public function contentUnlocks(): MorphMany
     {
         return $this->morphMany(ContentUnlock::class, 'unlockable');
