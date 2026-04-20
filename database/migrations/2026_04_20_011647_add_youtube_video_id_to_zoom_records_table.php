@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('zoom_records', function (Blueprint $table) {
-            $table->string('youtube_video_id', 32)->nullable()->after('youtube_url')->index();
-        });
+        if (! Schema::hasColumn('zoom_records', 'youtube_video_id')) {
+            Schema::table('zoom_records', function (Blueprint $table) {
+                $table->string('youtube_video_id', 32)->nullable()->after('youtube_url')->index();
+            });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('zoom_records', function (Blueprint $table) {
-            $table->dropColumn('youtube_video_id');
-        });
+        if (Schema::hasColumn('zoom_records', 'youtube_video_id')) {
+            Schema::table('zoom_records', function (Blueprint $table) {
+                $table->dropColumn('youtube_video_id');
+            });
+        }
     }
 };

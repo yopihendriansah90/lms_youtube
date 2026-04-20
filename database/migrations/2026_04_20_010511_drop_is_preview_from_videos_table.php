@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('videos', function (Blueprint $table) {
-            $table->dropColumn('is_preview');
-        });
+        if (Schema::hasColumn('videos', 'is_preview')) {
+            Schema::table('videos', function (Blueprint $table) {
+                $table->dropColumn('is_preview');
+            });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('videos', function (Blueprint $table) {
-            $table->boolean('is_preview')->default(false)->after('price');
-        });
+        if (! Schema::hasColumn('videos', 'is_preview')) {
+            Schema::table('videos', function (Blueprint $table) {
+                $table->boolean('is_preview')->default(false)->after('price');
+            });
+        }
     }
 };
