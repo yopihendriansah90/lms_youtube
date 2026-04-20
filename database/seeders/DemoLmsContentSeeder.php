@@ -16,6 +16,8 @@ use App\Models\Setting;
 use App\Models\User;
 use App\Models\Video;
 use App\Models\ZoomRecord;
+use App\Models\ZoomRoom;
+use App\Models\ZoomRoomQuestion;
 use Illuminate\Database\Seeder;
 
 class DemoLmsContentSeeder extends Seeder
@@ -246,6 +248,112 @@ class DemoLmsContentSeeder extends Seeder
                 'price' => 99000,
                 'is_published' => true,
                 'sort_order' => 2,
+            ],
+        );
+
+        $liveZoomRoom = ZoomRoom::query()->updateOrCreate(
+            ['slug' => 'live-youtube-content-clinic'],
+            [
+                'program_id' => $program->id,
+                'mentor_id' => $mentor->id,
+                'title' => 'Live YouTube Content Clinic',
+                'description' => 'Sesi live untuk membedah ide konten member, menyusun alur video, dan mengumpulkan pertanyaan yang akan dijawab mentor pada materi berikutnya.',
+                'join_url' => 'https://zoom.us/j/98765432101?pwd=demoContentClinic',
+                'meeting_id' => '987 6543 2101',
+                'passcode' => 'CLINIC12',
+                'starts_at' => now()->subMinutes(20),
+                'ends_at' => now()->addMinutes(100),
+                'status' => 'live',
+                'is_published' => true,
+                'sort_order' => 1,
+            ],
+        );
+
+        $upcomingZoomRoom = ZoomRoom::query()->updateOrCreate(
+            ['slug' => 'zoom-workshop-offer-building'],
+            [
+                'program_id' => $program->id,
+                'mentor_id' => $mentor->id,
+                'title' => 'Zoom Workshop Offer Building',
+                'description' => 'Workshop lanjutan untuk menyusun penawaran kelas, struktur modul, dan daftar pertanyaan yang akan dikonversi menjadi video materi.',
+                'join_url' => 'https://zoom.us/j/98765432102?pwd=demoOfferBuilding',
+                'meeting_id' => '987 6543 2102',
+                'passcode' => 'OFFER12',
+                'starts_at' => now()->addDays(2)->setTime(19, 30),
+                'ends_at' => now()->addDays(2)->setTime(21, 0),
+                'status' => 'scheduled',
+                'is_published' => true,
+                'sort_order' => 2,
+            ],
+        );
+
+        $finishedZoomRoom = ZoomRoom::query()->updateOrCreate(
+            ['slug' => 'arsip-live-qna-channel-positioning'],
+            [
+                'program_id' => $program->id,
+                'mentor_id' => $mentor->id,
+                'title' => 'Arsip Live QnA Channel Positioning',
+                'description' => 'Riwayat sesi Zoom sebelumnya yang dipakai untuk meninjau pertanyaan member tentang positioning channel dan struktur kurikulum.',
+                'join_url' => 'https://zoom.us/j/98765432103?pwd=demoArchivePositioning',
+                'meeting_id' => '987 6543 2103',
+                'passcode' => 'ARCHIVE1',
+                'starts_at' => now()->subDays(5)->setTime(20, 0),
+                'ends_at' => now()->subDays(5)->setTime(21, 30),
+                'status' => 'finished',
+                'is_published' => true,
+                'sort_order' => 3,
+            ],
+        );
+
+        ZoomRoomQuestion::query()->updateOrCreate(
+            [
+                'zoom_room_id' => $liveZoomRoom->id,
+                'member_id' => $memberOne->id,
+                'question' => 'Bagaimana cara menentukan pilar konten yang paling cepat menghasilkan ide video turunan untuk satu bulan penuh?',
+            ],
+            [
+                'subject' => 'Pilar konten bulanan',
+                'asked_at' => now()->subMinutes(12),
+                'seen_at' => null,
+            ],
+        );
+
+        ZoomRoomQuestion::query()->updateOrCreate(
+            [
+                'zoom_room_id' => $liveZoomRoom->id,
+                'member_id' => $memberTwo->id,
+                'question' => 'Kalau saya sudah punya beberapa topik, bagaimana cara mengurutkan topik itu jadi seri materi yang enak diikuti member baru?',
+            ],
+            [
+                'subject' => 'Urutan materi untuk pemula',
+                'asked_at' => now()->subMinutes(7),
+                'seen_at' => null,
+            ],
+        );
+
+        ZoomRoomQuestion::query()->updateOrCreate(
+            [
+                'zoom_room_id' => $finishedZoomRoom->id,
+                'member_id' => $memberOne->id,
+                'question' => 'Apa indikator paling jelas bahwa positioning channel sudah tepat sebelum kita lanjut membuat materi premium?',
+            ],
+            [
+                'subject' => 'Validasi positioning channel',
+                'asked_at' => now()->subDays(5)->addMinutes(35),
+                'seen_at' => now()->subDays(5)->addMinutes(50),
+            ],
+        );
+
+        ZoomRoomQuestion::query()->updateOrCreate(
+            [
+                'zoom_room_id' => $finishedZoomRoom->id,
+                'member_id' => $memberTwo->id,
+                'question' => 'Bagaimana mentor biasanya memilih pertanyaan mana yang layak diubah menjadi video materi lanjutan untuk member?',
+            ],
+            [
+                'subject' => 'Seleksi pertanyaan jadi materi',
+                'asked_at' => now()->subDays(5)->addHour(),
+                'seen_at' => now()->subDays(5)->addHour()->addMinutes(15),
             ],
         );
 

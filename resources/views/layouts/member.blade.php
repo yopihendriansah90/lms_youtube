@@ -33,7 +33,6 @@
                         <a href="{{ route('member.home') }}" class="desktop-nav-link {{ request()->routeIs('member.home') ? 'is-active' : '' }}">Beranda</a>
                         <a href="{{ route('member.materials') }}" class="desktop-nav-link {{ request()->routeIs('member.materials*') ? 'is-active' : '' }}">Materi</a>
                         <a href="{{ route('member.zoom') }}" class="desktop-nav-link {{ request()->routeIs('member.zoom') ? 'is-active' : '' }}">Rekaman</a>
-                        <a href="{{ route('member.questions') }}" class="desktop-nav-link {{ request()->routeIs('member.questions*') ? 'is-active' : '' }}">Mentor</a>
                         <a href="{{ route('member.rooms') }}" class="desktop-nav-link {{ request()->routeIs('member.rooms') ? 'is-active' : '' }}">Room Zoom</a>
                     </div>
 
@@ -69,9 +68,6 @@
                     </a>
                     <a href="{{ route('member.zoom') }}" class="mobile-nav-link {{ request()->routeIs('member.zoom') ? 'is-active' : '' }}">
                         <span>Zoom</span>
-                    </a>
-                    <a href="{{ route('member.questions') }}" class="mobile-nav-link {{ request()->routeIs('member.questions*') ? 'is-active' : '' }}">
-                        <span>Mentor</span>
                     </a>
                     <a href="{{ route('member.rooms') }}" class="mobile-nav-link {{ request()->routeIs('member.rooms') ? 'is-active' : '' }}">
                         <span>Room</span>

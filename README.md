@@ -7,6 +7,21 @@ Portal LMS berbasis Laravel 12 dengan:
 - Filament Spatie Media Library untuk manajemen file
 - Frontend member mobile-first dengan tema dark
 
+## Dokumentasi Visual
+
+Panduan penggunaan utama sudah disiapkan dalam format Markdown yang bisa langsung dibaca di GitHub:
+
+- [Panduan Member Portal](docs/member-guide.md)
+- [Panduan Admin Panel](docs/admin-guide.md)
+
+Folder screenshot:
+
+- [Screenshot Member](docs/screenshots/member)
+- [Screenshot Admin](docs/screenshots/admin)
+
+Screenshot dibuat dari data demo lokal pada 20 April 2026, jadi jumlah data dan isi tabel bisa berbeda jika database aktifmu berbeda.
+Halaman yang mengembalikan `403 Forbidden` tidak di-screenshot dan tidak dimasukkan ke panduan penggunaan.
+
 ## Requirement
 
 - PHP `8.2+`
@@ -144,21 +159,39 @@ Seeder project ini membuat akun berikut:
 
 Resource utama yang dipakai:
 
-- `Kelas Materi`
-- `Materi`
-- `Video Materi`
-- `Dokumen PDF`
-- `Update Materi`
-- `Member Profiles`
-- `Mentor Profiles`
+- `Setting Web`
+- `Room Zoom`
+- `Pertanyaan Zoom`
+- `Rekaman Zoom`
+- `Pembayaran Premium`
 
 Alur input konten:
 
-1. Buat `Kelas Materi`
-2. Buat `Materi`
-3. Buat `Video Materi` dan hubungkan ke materi
-4. Atur tiap video sebagai `free` atau `paid`
-5. Upload dokumen PDF dan update materi bila perlu
+1. Atur `Setting Web`
+2. Gunakan dashboard admin untuk memantau `Ringkasan Operasional`, `Aksi Cepat Admin` dengan tombol `Buka Menu`, pertanyaan live terbaru, dan pembayaran premium terbaru
+3. Siapkan atau perbarui `Room Zoom`
+4. Pantau `Pertanyaan Zoom` selama sesi live
+5. Arsipkan sesi ke `Rekaman Zoom`
+6. Verifikasi akses di `Pembayaran Premium`
+
+## Struktur Member
+
+Halaman utama member yang aktif saat ini:
+
+- `Login`
+- `Beranda`
+- `Materi`
+- `Detail Materi`
+- `Room Zoom`
+- `Rekaman Zoom`
+
+Alur member yang disarankan:
+
+1. Login ke portal member.
+2. Buka `Materi` untuk belajar dari video dan PDF.
+3. Gunakan `Room Zoom` saat sesi live berlangsung.
+4. Kirim pertanyaan ke mentor hanya saat room berstatus `live`.
+5. Gunakan `Rekaman Zoom` untuk menonton ulang sesi yang sudah selesai.
 
 ## Seeder Dummy Video
 
@@ -175,6 +208,7 @@ php artisan view:cache
 php artisan route:list
 php artisan db:seed --class=DemoLmsContentSeeder
 php artisan db:seed --class=DemoYoutubeMaterialVideoSeeder
+python3 scripts/capture_docs_screenshots.py
 ```
 
 ## Catatan
@@ -182,4 +216,3 @@ php artisan db:seed --class=DemoYoutubeMaterialVideoSeeder
 - Jika asset atau CSS tidak berubah, jalankan ulang `npm run build` atau `npm run dev`
 - Jika media tidak tampil, cek `php artisan storage:link`
 - Jika role/permission bermasalah, jalankan ulang `php artisan db:seed`
-

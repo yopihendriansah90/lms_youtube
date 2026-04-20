@@ -366,7 +366,7 @@
     }
 
     .split-showcase {
-        @apply grid gap-4 lg:grid-cols-[1.35fr_0.65fr] lg:items-start;
+        @apply grid gap-4 lg:grid-cols-[1.18fr_0.82fr] lg:items-start;
     }
 
     .home-top-grid {
@@ -650,6 +650,65 @@
         @apply p-5;
     }
 
+    .room-detail-grid {
+        @apply grid gap-3 sm:grid-cols-2;
+    }
+
+    .room-question-state {
+        @apply rounded-[24px] border border-white/8 bg-white/[0.02] p-5;
+    }
+
+    .room-list-grid {
+        @apply grid gap-4 lg:grid-cols-2;
+    }
+
+    .room-list-card {
+        @apply block rounded-[24px] border border-white/8 bg-white/[0.02] p-5 transition duration-300 hover:border-brand-400/24 hover:bg-white/[0.04];
+        transform: translate3d(0, var(--zoom-parallax-offset, 0px), 0);
+        will-change: transform;
+        box-shadow: 0 18px 44px rgba(0, 0, 0, 0.18);
+    }
+
+    .room-list-card.is-active {
+        @apply border-brand-400/28 bg-brand-400/[0.06];
+        box-shadow:
+            0 22px 48px rgba(0, 0, 0, 0.2),
+            inset 0 0 0 1px rgba(63, 115, 244, 0.16);
+    }
+
+    .room-list-card:hover {
+        transform: translate3d(0, calc(var(--zoom-parallax-offset, 0px) - 6px), 0);
+    }
+
+    .room-list-card:active {
+        transform: translate3d(0, calc(var(--zoom-parallax-offset, 0px) - 2px), 0) scale(0.992);
+    }
+
+    .room-stage-card {
+        position: relative;
+        overflow: hidden;
+        transform: translate3d(0, calc(var(--zoom-parallax-offset, 0px) * 0.45), 0);
+        will-change: transform;
+    }
+
+    #room-stage {
+        scroll-margin-top: 5.5rem;
+    }
+
+    #room-stage:target .room-stage-card {
+        animation: room-stage-focus 900ms ease-out;
+    }
+
+    .room-stage-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(circle at top right, rgba(63, 115, 244, 0.12), transparent 34%),
+            radial-gradient(circle at left 20%, rgba(64, 200, 255, 0.08), transparent 28%);
+        pointer-events: none;
+    }
+
     .rich-card {
         @apply min-w-0 overflow-hidden rounded-[24px] border border-white/8 bg-[linear-gradient(180deg,rgba(18,24,38,0.96),rgba(10,14,22,0.96))] p-5 shadow-[0_18px_55px_rgba(0,0,0,0.28)];
     }
@@ -725,6 +784,23 @@
 
     100% {
         transform: translateY(0) scale(1);
+        box-shadow: 0 0 0 rgba(63, 115, 244, 0);
+    }
+}
+
+@keyframes room-stage-focus {
+    0% {
+        transform: translate3d(0, calc(var(--zoom-parallax-offset, 0px) + 14px), 0) scale(0.988);
+        box-shadow: 0 0 0 rgba(63, 115, 244, 0);
+    }
+
+    55% {
+        transform: translate3d(0, calc(var(--zoom-parallax-offset, 0px) * 0.45), 0) scale(1);
+        box-shadow: 0 0 0 1px rgba(63, 115, 244, 0.28);
+    }
+
+    100% {
+        transform: translate3d(0, calc(var(--zoom-parallax-offset, 0px) * 0.45), 0) scale(1);
         box-shadow: 0 0 0 rgba(63, 115, 244, 0);
     }
 }

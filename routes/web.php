@@ -25,8 +25,6 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/materi/{material:slug}', [MemberPortalController::class, 'showMaterial'])->name('member.materials.show');
     Route::get('/materi/{material:slug}/dokumen/{document}', [MemberPortalController::class, 'showPdfDocument'])->name('member.materials.documents.show');
     Route::get('/room-zoom', [MemberPortalController::class, 'rooms'])->name('member.rooms');
+    Route::post('/room-zoom/{zoomRoom:slug}/questions', [MemberPortalController::class, 'storeZoomRoomQuestion'])->name('member.rooms.questions.store');
     Route::get('/rekaman-zoom', [MemberPortalController::class, 'zoomRecords'])->name('member.zoom');
-    Route::get('/mentor', [MemberPortalController::class, 'mentors'])->name('member.mentors');
-    Route::get('/tanya-jawab', [MemberPortalController::class, 'questions'])->name('member.questions');
-    Route::post('/tanya-jawab', [MemberPortalController::class, 'storeQuestion'])->name('member.questions.store');
 });

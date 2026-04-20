@@ -87,9 +87,19 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(Question::class, 'mentor_id');
     }
 
+    public function zoomRoomQuestions(): HasMany
+    {
+        return $this->hasMany(ZoomRoomQuestion::class, 'member_id');
+    }
+
     public function questionAnswers(): HasMany
     {
         return $this->hasMany(QuestionAnswer::class, 'mentor_id');
+    }
+
+    public function mentoredZoomRooms(): HasMany
+    {
+        return $this->hasMany(ZoomRoom::class, 'mentor_id');
     }
 
     public function orders(): HasMany

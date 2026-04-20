@@ -2,3 +2,99 @@
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
+
+:root {
+    --admin-card-bg: #ffffff;
+    --admin-card-border: #e5e7eb;
+    --admin-card-title: #111827;
+    --admin-card-copy: #4b5563;
+    --admin-card-muted: #6b7280;
+    --admin-card-hover-bg: #fff8eb;
+    --admin-card-hover-border: #f3c16a;
+    --admin-card-badge-success-bg: #ecfdf3;
+    --admin-card-badge-success-text: #067647;
+    --admin-card-badge-warning-bg: #fffaeb;
+    --admin-card-badge-warning-text: #b54708;
+}
+
+.dark {
+    --admin-card-bg: rgba(255, 255, 255, 0.04);
+    --admin-card-border: rgba(255, 255, 255, 0.10);
+    --admin-card-title: rgba(255, 255, 255, 0.96);
+    --admin-card-copy: rgba(255, 255, 255, 0.74);
+    --admin-card-muted: rgba(255, 255, 255, 0.52);
+    --admin-card-hover-bg: rgba(245, 158, 11, 0.10);
+    --admin-card-hover-border: rgba(245, 158, 11, 0.32);
+    --admin-card-badge-success-bg: rgba(34, 197, 94, 0.14);
+    --admin-card-badge-success-text: #86efac;
+    --admin-card-badge-warning-bg: rgba(245, 158, 11, 0.14);
+    --admin-card-badge-warning-text: #fcd34d;
+}
+
+.admin-dashboard-card {
+    border: 1px solid var(--admin-card-border);
+    background: var(--admin-card-bg);
+    color: var(--admin-card-title);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease;
+}
+
+.admin-dashboard-card:hover {
+    border-color: var(--admin-card-hover-border);
+    background: var(--admin-card-hover-bg);
+    transform: translateY(-1px);
+}
+
+.admin-dashboard-card-title {
+    color: var(--admin-card-title);
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.admin-dashboard-card-copy {
+    color: var(--admin-card-copy);
+    font-size: 0.875rem;
+    line-height: 1.7;
+}
+
+.admin-dashboard-card-muted {
+    color: var(--admin-card-muted);
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+
+.admin-dashboard-kicker {
+    color: var(--admin-card-muted);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.admin-dashboard-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.admin-dashboard-badge--success {
+    background: var(--admin-card-badge-success-bg);
+    color: var(--admin-card-badge-success-text);
+}
+
+.admin-dashboard-badge--warning {
+    background: var(--admin-card-badge-warning-bg);
+    color: var(--admin-card-badge-warning-text);
+}
+
+.admin-dashboard-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}

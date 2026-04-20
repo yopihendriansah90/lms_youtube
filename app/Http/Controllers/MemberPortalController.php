@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendZoomRoomQuestionNotificationJob;
 use App\Models\ContentUnlock;
 use App\Models\Material;
 use App\Models\MaterialUpdate;
 use App\Models\MentorProfile;
 use App\Models\PdfDocument;
-use App\Models\Question;
 use App\Models\User;
 use App\Models\Video;
 use App\Models\ZoomRecord;
+use App\Models\ZoomRoom;
+use App\Models\ZoomRoomQuestion;
 use App\Support\PortalSettings;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -40,31 +42,49 @@ class MemberPortalController extends Controller
             ->limit(1)
             ->get();
 
+        $liveZoomRoom = ZoomRoom::query()
+            ->where('is_published', true)
+            ->where('status', 'live')
+            ->orderByDesc('starts_at')
+            ->first();
+
+        $upcomingZoomRooms = ZoomRoom::query()
+            ->where('is_published', true)
+            ->where('status', 'scheduled')
+            ->orderBy('starts_at')
+            ->limit(2)
+            ->get();
+
         $mentors = MentorProfile::query()
             ->with('user')
             ->where('is_active', true)
+            ->orderBy('display_name')
             ->limit(2)
             ->get();
 
         $activeMeeting = [
-            'title' => PortalSettings::get('portal.active_meeting_title', 'Workshop React Hooks - Batch 12'),
-            'schedule' => PortalSettings::get('portal.active_meeting_schedule', 'Kamis, 23 Januari 2025'),
-            'time' => PortalSettings::get('portal.active_meeting_time', '14:00 - 16:00 WIB'),
-            'status' => PortalSettings::get('portal.active_meeting_status', 'Sedang Berlangsung'),
+            'title' => $liveZoomRoom?->title ?: PortalSettings::get('portal.active_meeting_title', 'Workshop React Hooks - Batch 12'),
+            'schedule' => $liveZoomRoom?->starts_at?->translatedFormat('l, d F Y') ?: PortalSettings::get('portal.active_meeting_schedule', 'Kamis, 23 Januari 2025'),
+            'time' => $liveZoomRoom?->starts_at
+                ? $liveZoomRoom->starts_at->format('H:i') . ' WIB'
+                : PortalSettings::get('portal.active_meeting_time', '14:00 - 16:00 WIB'),
+            'status' => $liveZoomRoom ? 'Sedang Berlangsung' : PortalSettings::get('portal.active_meeting_status', 'Sedang Berlangsung'),
         ];
 
-        $upcomingMeetings = collect([
-            [
-                'day' => 'Besok',
-                'time' => '10:00 WIB',
-                'title' => 'Database Design Basics',
-            ],
-            [
-                'day' => 'Jumat',
-                'time' => '14:00 WIB',
-                'title' => 'API Integration Workshop',
-            ],
-        ]);
+        $upcomingMeetings = $upcomingZoomRooms->map(function (ZoomRoom $room): array {
+            return [
+                'day' => $room->starts_at?->translatedFormat('D') ?? 'Jadwal',
+                'time' => $room->starts_at?->format('H:i').' WIB' ?? '-',
+                'title' => $room->title,
+            ];
+        });
+
+        $featuredRoomCard = $liveZoomRoom
+            ?: ZoomRoom::query()
+                ->where('is_published', true)
+                ->where('status', 'scheduled')
+                ->orderBy('starts_at')
+                ->first();
 
         $newUpdatesCount = MaterialUpdate::query()
             ->where('is_published', true)
@@ -81,15 +101,6 @@ class MemberPortalController extends Controller
                 'accent' => 'from-brand-500/20 via-brand-500/6 to-transparent',
                 'iconWrap' => 'bg-brand-500/16 text-brand-200',
                 'badge' => $newUpdatesCount > 0 ? $newUpdatesCount.' baru' : null,
-            ],
-            [
-                'title' => 'Tanya Jawab',
-                'description' => 'Diskusikan pertanyaan Anda langsung dengan mentor dan komunitas.',
-                'action' => 'Mulai Diskusi',
-                'href' => route('member.questions'),
-                'icon' => 'heroicon-o-chat-bubble-left-right',
-                'accent' => 'from-mint-400/20 via-mint-400/6 to-transparent',
-                'iconWrap' => 'bg-mint-400/14 text-mint-400',
             ],
             [
                 'title' => 'Room Zoom Meeting',
@@ -110,13 +121,24 @@ class MemberPortalController extends Controller
                 'iconWrap' => 'bg-cyan-400/14 text-cyan-300',
             ],
             [
-                'title' => 'Data Mentor',
-                'description' => 'Lihat mentor aktif, bidang keahlian, dan jalur pendampingan belajar.',
-                'action' => 'Lihat Mentor',
-                'href' => route('member.mentors'),
-                'icon' => 'heroicon-o-academic-cap',
-                'accent' => 'from-fuchsia-400/18 via-fuchsia-400/6 to-transparent',
-                'iconWrap' => 'bg-fuchsia-400/14 text-fuchsia-300',
+                'title' => $featuredRoomCard?->title ?? 'Jadwal Zoom Berikutnya',
+                'description' => $featuredRoomCard
+                    ? collect([
+                        $featuredRoomCard->status === 'live' ? 'Sedang berlangsung sekarang.' : 'Sesi terdekat yang siap diikuti member.',
+                        $featuredRoomCard->starts_at?->translatedFormat('d M Y') ?: null,
+                        $featuredRoomCard->starts_at ? $featuredRoomCard->starts_at->format('H:i') . ' WIB' : null,
+                    ])->filter()->join(' ')
+                    : 'Pantau sesi live terbaru atau jadwal Zoom berikutnya dari dashboard.',
+                'action' => $featuredRoomCard?->status === 'live' ? 'Masuk ke Room' : 'Lihat Jadwal',
+                'href' => $featuredRoomCard
+                    ? route('member.rooms', ['room' => $featuredRoomCard->slug])
+                    : route('member.rooms'),
+                'icon' => 'heroicon-o-signal',
+                'accent' => 'from-mint-400/18 via-mint-400/6 to-transparent',
+                'iconWrap' => 'bg-mint-400/14 text-mint-300',
+                'badge' => $featuredRoomCard
+                    ? ($featuredRoomCard->status === 'live' ? 'Live' : 'Segera')
+                    : null,
             ],
         ]);
 
@@ -130,56 +152,92 @@ class MemberPortalController extends Controller
             'heroVideoHeading' => PortalSettings::get('portal.hero_video_heading', 'Video Penjelasan'),
             'heroVideoCaption' => PortalSettings::get('portal.hero_video_caption', $heroVideo?->material?->title ?? 'Tempat Video'),
             'latestZoomRecord' => $latestZoomRecords->first(),
-            'mentors' => $mentors,
             'activeMeeting' => $activeMeeting,
             'upcomingMeetings' => $upcomingMeetings,
+            'mentors' => $mentors,
             'menuCards' => $menuCards,
             'stats' => [
                 'materials' => Material::query()->where('status', 'published')->count(),
                 'zoomRecords' => ZoomRecord::query()->where('is_published', true)->count(),
-                'questions' => Question::query()->where('member_id', $user->id)->count(),
+                'questions' => ZoomRoomQuestion::query()->where('member_id', $user->id)->count(),
             ],
         ]);
     }
 
-    public function rooms(): View
+    public function rooms(Request $request): View
     {
+        $selectedSlug = $request->string('room')->toString();
+
+        $roomOrderSql = "CASE status WHEN 'live' THEN 0 WHEN 'scheduled' THEN 1 ELSE 2 END";
+
+        $selectedRoom = ZoomRoom::query()
+            ->with([
+                'program',
+                'mentor',
+                'questions' => fn ($query) => $query
+                    ->with('member')
+                    ->latest('asked_at')
+                    ->latest('id')
+                    ->limit(12),
+            ])
+            ->withCount('questions')
+            ->where('is_published', true)
+            ->when(
+                filled($selectedSlug),
+                fn ($query) => $query->where('slug', $selectedSlug),
+                fn ($query) => $query->orderByRaw($roomOrderSql)->orderByDesc('starts_at')->orderBy('sort_order')
+            )
+            ->first();
+
+        $zoomRooms = ZoomRoom::query()
+            ->with(['program', 'mentor'])
+            ->withCount('questions')
+            ->where('is_published', true)
+            ->orderByRaw($roomOrderSql)
+            ->orderByDesc('starts_at')
+            ->orderBy('sort_order')
+            ->paginate(6);
+
+        $selectedRoom ??= $zoomRooms->first();
+
         return view('member.rooms.index', [
-            'activeMeeting' => [
-                'title' => 'Workshop React Hooks - Batch 12',
-                'description' => 'Sesi live untuk membahas ritme produksi video dan struktur kelas minggu ini.',
-                'schedule' => 'Kamis, 23 Januari 2025',
-                'time' => '14:00 - 16:00 WIB',
-                'meeting_id' => '123 456 7890',
-                'password' => 'ReactHooks2025',
-                'join_url' => 'https://zoom.us/j/1234567890',
-            ],
-            'upcomingMeetings' => collect([
-                [
-                    'day' => 'Besok',
-                    'time' => '10:00 WIB',
-                    'title' => 'Database Design Basics',
-                    'description' => 'Bedah struktur database untuk LMS dan area member.',
-                ],
-                [
-                    'day' => 'Jumat',
-                    'time' => '14:00 WIB',
-                    'title' => 'API Integration Workshop',
-                    'description' => 'Integrasi API untuk unlock, notifikasi, dan distribusi materi.',
-                ],
-            ]),
+            'selectedRoom' => $selectedRoom,
+            'zoomRooms' => $zoomRooms,
+            'canAskQuestion' => $selectedRoom?->isLive() ?? false,
         ]);
     }
 
-    public function mentors(): View
+    public function storeZoomRoomQuestion(Request $request, ZoomRoom $zoomRoom): RedirectResponse
     {
-        return view('member.mentors.index', [
-            'mentors' => MentorProfile::query()
-                ->with('user')
-                ->where('is_active', true)
-                ->orderBy('display_name')
-                ->get(),
+        abort_unless($zoomRoom->is_published, 404);
+
+        if (! $zoomRoom->isLive()) {
+            return redirect()
+                ->route('member.rooms', ['room' => $zoomRoom->slug])
+                ->with('status', 'Pertanyaan hanya bisa dikirim saat sesi Zoom sedang berlangsung.');
+        }
+
+        $validated = $request->validate([
+            'subject' => ['nullable', 'string', 'max:255'],
+            'question' => ['required', 'string', 'min:10'],
+        ], [
+            'question.required' => 'Pertanyaan wajib diisi.',
+            'question.min' => 'Pertanyaan minimal 10 karakter.',
         ]);
+
+        $zoomRoomQuestion = ZoomRoomQuestion::query()->create([
+            'zoom_room_id' => $zoomRoom->id,
+            'member_id' => $request->user()->id,
+            'subject' => blank($validated['subject'] ?? null) ? null : $validated['subject'],
+            'question' => $validated['question'],
+            'asked_at' => now(),
+        ]);
+
+        SendZoomRoomQuestionNotificationJob::dispatch($zoomRoomQuestion->id)->afterCommit();
+
+        return redirect()
+            ->route('member.rooms', ['room' => $zoomRoom->slug])
+            ->with('status', 'Pertanyaan berhasil dikirim ke mentor untuk sesi live ini.');
     }
 
     public function materials(Request $request): View
@@ -380,49 +438,6 @@ class MemberPortalController extends Controller
             'shouldAutoplayActiveZoom' => $shouldAutoplay,
             'user' => $request->user(),
         ]);
-    }
-
-    public function questions(Request $request): View
-    {
-        return view('member.questions.index', [
-            'questions' => Question::query()
-                ->with(['mentor', 'material', 'answers'])
-                ->where('member_id', $request->user()->id)
-                ->latest()
-                ->paginate(10),
-            'mentors' => MentorProfile::query()
-                ->with('user')
-                ->where('is_active', true)
-                ->get(),
-            'materials' => Material::query()
-                ->where('status', 'published')
-                ->orderBy('title')
-                ->get(),
-        ]);
-    }
-
-    public function storeQuestion(Request $request): RedirectResponse
-    {
-        $validated = $request->validate([
-            'mentor_id' => ['nullable', 'exists:users,id'],
-            'material_id' => ['nullable', 'exists:materials,id'],
-            'subject' => ['required', 'string', 'max:255'],
-            'question' => ['required', 'string', 'min:10'],
-        ], [
-            'subject.required' => 'Subjek pertanyaan wajib diisi.',
-            'question.required' => 'Pertanyaan wajib diisi.',
-            'question.min' => 'Pertanyaan minimal 10 karakter.',
-        ]);
-
-        Question::query()->create([
-            ...$validated,
-            'member_id' => $request->user()->id,
-            'status' => 'pending',
-            'is_public' => false,
-            'asked_at' => now(),
-        ]);
-
-        return back()->with('status', 'Pertanyaan berhasil dikirim ke mentor.');
     }
 
     protected function userCanAccessContent(User $user, Material|Video|ZoomRecord|PdfDocument $content): bool

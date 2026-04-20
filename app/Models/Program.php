@@ -36,4 +36,9 @@ class Program extends Model
     {
         return $this->hasMany(ZoomRecord::class);
     }
+
+    public function zoomRooms(): HasMany
+    {
+        return $this->hasMany(ZoomRoom::class);
+    }
 }

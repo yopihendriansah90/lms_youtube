@@ -131,75 +131,48 @@
                 </div>
             </div>
 
-            <div class="desktop-side-stack">
-                <div class="desktop-highlight-card">
-                    <div class="desktop-inline-panel">
-                        <p class="meta-copy">Aktivitas Belajar</p>
-                        <h2 class="card-title mt-3 max-w-full">Fokus Hari Ini</h2>
-                        <p class="body-copy mt-3">Buka materi utama, cek sesi live berikutnya, lalu lanjutkan diskusi dengan mentor jika ada kendala.</p>
-                        <div class="mt-6 flex flex-wrap gap-2">
-                            <span class="inline-chip">Mulai dari materi</span>
-                            <span class="inline-chip">Pantau room live</span>
-                            <span class="inline-chip">Kirim pertanyaan</span>
-                        </div>
+            <div class="rich-card">
+                <div class="flex min-w-0 items-start justify-between gap-4">
+                    <div class="min-w-0 flex-1">
+                        <p class="meta-copy">Profil Mentor</p>
+                        <h2 class="card-title mt-2 max-w-full whitespace-normal lg:text-[1.55rem] xl:text-[1.7rem]">
+                            Mentor Aktif
+                        </h2>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="rich-card">
-            <div class="flex min-w-0 items-center justify-between gap-3">
-                <div class="min-w-0">
-                    <p class="meta-copy">Data Mentor</p>
-                    <h2 class="section-title mt-2">Mentor Aktif</h2>
+                <div class="mt-5 grid gap-4">
+                    @forelse ($mentors as $mentor)
+                        <article class="feature-list-card">
+                            <div class="flex items-center gap-4">
+                                <div class="mentor-avatar shrink-0">
+                                    @if ($mentor->photo_url)
+                                        <img
+                                            src="{{ $mentor->photo_url }}"
+                                            alt="{{ $mentor->display_name }}"
+                                            class="h-full w-full object-cover"
+                                            loading="lazy"
+                                        >
+                                    @else
+                                        <span>{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($mentor->display_name, 0, 1)) }}</span>
+                                    @endif
+                                </div>
+                                <div class="min-w-0">
+                                    <h3 class="card-heading">{{ $mentor->display_name }}</h3>
+                                    <p class="body-copy mt-2">{{ $mentor->speciality ?: 'Mentor utama kelas' }}</p>
+                                </div>
+                            </div>
+
+                            @if ($mentor->bio)
+                                <p class="body-copy mt-4 line-clamp-3">{{ $mentor->bio }}</p>
+                            @endif
+                        </article>
+                    @empty
+                        <div class="feature-list-card">
+                            <p class="body-copy">Profil mentor aktif belum tersedia.</p>
+                        </div>
+                    @endforelse
                 </div>
-                <a href="{{ route('member.mentors') }}" class="card-link shrink-0">Lihat</a>
-            </div>
-
-            <div class="scroll-stack mt-5 lg:hidden">
-                @foreach ($mentors as $mentor)
-                    <article class="mentor-spotlight-card">
-                        <div class="mentor-avatar">
-                            @if ($mentor->photo_url)
-                                <img
-                                    src="{{ $mentor->photo_url }}"
-                                    alt="{{ $mentor->display_name }}"
-                                    class="h-full w-full object-cover"
-                                    loading="lazy"
-                                >
-                            @else
-                                <span>{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($mentor->display_name, 0, 1)) }}</span>
-                            @endif
-                        </div>
-                        <div class="mt-4 space-y-2">
-                            <p class="card-heading">{{ $mentor->display_name }}</p>
-                            <p class="body-copy">{{ $mentor->speciality ?: 'Mentor utama kelas' }}</p>
-                        </div>
-                    </article>
-                @endforeach
-            </div>
-
-            <div class="desktop-mentor-grid mt-5">
-                @foreach ($mentors as $mentor)
-                    <article class="mentor-spotlight-card desktop-mentor-card w-full">
-                        <div class="mentor-avatar desktop-mentor-avatar">
-                            @if ($mentor->photo_url)
-                                <img
-                                    src="{{ $mentor->photo_url }}"
-                                    alt="{{ $mentor->display_name }}"
-                                    class="h-full w-full object-cover"
-                                    loading="lazy"
-                                >
-                            @else
-                                <span>{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($mentor->display_name, 0, 1)) }}</span>
-                            @endif
-                        </div>
-                        <div class="mt-6 space-y-3">
-                            <p class="card-heading">{{ $mentor->display_name }}</p>
-                            <p class="body-copy">{{ $mentor->speciality ?: 'Mentor utama kelas' }}</p>
-                        </div>
-                    </article>
-                @endforeach
             </div>
         </div>
 
