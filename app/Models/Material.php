@@ -80,9 +80,14 @@ class Material extends Model
         return $this->hasMany(Question::class);
     }
 
+    public function premiumPayments(): HasMany
+    {
+        return $this->hasMany(PremiumPayment::class);
+    }
+
     public function materialPayments(): HasMany
     {
-        return $this->hasMany(MaterialPayment::class);
+        return $this->premiumPayments();
     }
 
     public function contentUnlocks(): MorphMany

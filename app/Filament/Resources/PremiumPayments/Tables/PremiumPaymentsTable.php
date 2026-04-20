@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\MaterialPayments\Tables;
+namespace App\Filament\Resources\PremiumPayments\Tables;
 
-use App\Filament\Resources\MaterialPayments\MaterialPaymentResource;
+use App\Filament\Resources\PremiumPayments\PremiumPaymentResource;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -12,19 +12,27 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
-class MaterialPaymentsTable
+class PremiumPaymentsTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
+                TextColumn::make('index')
+                    ->label('No.')
+                    ->rowIndex(),
                 TextColumn::make('user.name')
                     ->label('Member')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('material.title')
-                    ->label('Materi')
-                    ->searchable()
+                TextColumn::make('payment_target_type')
+                    ->label('Jenis Order')
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => $state === 'zoom_record' ? 'Rekaman Zoom' : 'Video Materi')
+                    ->color(fn (string $state): string => $state === 'zoom_record' ? 'info' : 'success'),
+                TextColumn::make('target_title')
+                    ->label('Konten Premium')
+                    ->state(fn ($record): ?string => $record->targetTitle())
                     ->wrap(),
                 TextColumn::make('amount')
                     ->label('Nominal')
@@ -62,13 +70,19 @@ class MaterialPaymentsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('created_at', 'desc')
-            ->recordUrl(fn ($record) => MaterialPaymentResource::getUrl('edit', ['record' => $record]))
+            ->recordUrl(fn ($record) => PremiumPaymentResource::getUrl('edit', ['record' => $record]))
             ->filters([
                 SelectFilter::make('status')
                     ->options([
                         'pending' => 'Pending',
                         'verified' => 'Verified',
                         'rejected' => 'Rejected',
+                    ]),
+                SelectFilter::make('payment_target_type')
+                    ->label('Jenis Order')
+                    ->options([
+                        'material' => 'Video Materi',
+                        'zoom_record' => 'Rekaman Zoom',
                     ]),
             ])
             ->recordActions([
@@ -77,14 +91,14 @@ class MaterialPaymentsTable
                     ->icon('heroicon-o-eye')
                     ->color('gray')
                     ->visible(fn ($record): bool => filled($record->payment_proof))
-                    ->url(fn ($record): string => route('admin.material-payments.proof.preview', $record))
+                    ->url(fn ($record): string => route('admin.premium-payments.proof.preview', $record))
                     ->openUrlInNewTab(),
                 Action::make('downloadProof')
                     ->label('Download Struk')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('gray')
                     ->visible(fn ($record): bool => filled($record->payment_proof))
-                    ->url(fn ($record): string => route('admin.material-payments.proof.download', $record))
+                    ->url(fn ($record): string => route('admin.premium-payments.proof.download', $record))
                     ->openUrlInNewTab(),
                 EditAction::make(),
             ])

@@ -167,7 +167,6 @@ Kolom utama:
 - `duration_in_seconds`
 - `access_type` (`free`, `paid`)
 - `price`
-- `is_preview`
 - `is_published`
 - `published_at`
 - `sort_order`

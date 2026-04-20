@@ -117,7 +117,6 @@ class DemoLmsContentSeeder extends Seeder
                 'duration_in_seconds' => 630,
                 'access_type' => 'free',
                 'price' => 0,
-                'is_preview' => true,
                 'is_published' => true,
                 'published_at' => now()->subDays(10),
                 'sort_order' => 1,
@@ -128,24 +127,23 @@ class DemoLmsContentSeeder extends Seeder
             'youtube_video_id' => $youtubePrimaryId,
         ])->save();
 
-        $premiumPreviewVideo = Video::query()->updateOrCreate(
-            ['material_id' => $premiumMaterial->id, 'title' => 'Preview Monetisasi Premium'],
+        $premiumIntroVideo = Video::query()->updateOrCreate(
+            ['material_id' => $premiumMaterial->id, 'title' => 'Pengantar Monetisasi Premium'],
             [
                 'section_id' => $premiumSection->id,
-                'title' => 'Preview Monetisasi Premium',
+                'title' => 'Pengantar Monetisasi Premium',
                 'youtube_url' => $youtubeSecondaryUrl,
                 'youtube_video_id' => $youtubeSecondaryId,
-                'description' => 'Preview gratis untuk melihat garis besar strategi monetisasi sebelum unlock penuh.',
+                'description' => 'Video pengantar untuk memahami garis besar strategi monetisasi dan alur belajar materi premium.',
                 'duration_in_seconds' => 420,
                 'access_type' => 'paid',
                 'price' => 0,
-                'is_preview' => true,
                 'is_published' => true,
                 'published_at' => now()->subDays(6),
                 'sort_order' => 1,
             ],
         );
-        $premiumPreviewVideo->forceFill([
+        $premiumIntroVideo->forceFill([
             'youtube_url' => $youtubeSecondaryUrl,
             'youtube_video_id' => $youtubeSecondaryId,
         ])->save();
@@ -161,7 +159,6 @@ class DemoLmsContentSeeder extends Seeder
                 'duration_in_seconds' => 980,
                 'access_type' => 'paid',
                 'price' => 149000,
-                'is_preview' => false,
                 'is_published' => true,
                 'published_at' => now()->subDays(5),
                 'sort_order' => 2,
@@ -223,6 +220,7 @@ class DemoLmsContentSeeder extends Seeder
                 'description' => 'Sesi rekaman Zoom untuk alignment strategi konten dan evaluasi progres member.',
                 'zoom_recording_url' => 'https://zoom.us/rec/share/demo-weekly-strategy-alignment',
                 'youtube_url' => $youtubePrimaryUrl,
+                'youtube_video_id' => $youtubePrimaryId,
                 'thumbnail' => 'zoom/weekly-strategy-alignment-q3.jpg',
                 'recorded_at' => now()->subDays(4),
                 'access_type' => 'free',
@@ -241,6 +239,7 @@ class DemoLmsContentSeeder extends Seeder
                 'description' => 'Sesi Zoom premium yang membahas arsitektur produk LMS, unlock flow, dan strategi konten lanjutan.',
                 'zoom_recording_url' => 'https://zoom.us/rec/share/demo-architecture-review',
                 'youtube_url' => $youtubeSecondaryUrl,
+                'youtube_video_id' => $youtubeSecondaryId,
                 'thumbnail' => 'zoom/technical-workshop-architecture-review.jpg',
                 'recorded_at' => now()->subDays(2),
                 'access_type' => 'paid',
@@ -258,7 +257,7 @@ class DemoLmsContentSeeder extends Seeder
             [
                 'mentor_id' => $mentor->id,
                 'material_id' => $premiumMaterial->id,
-                'question' => 'Saya ingin tahu urutan terbaik untuk menampilkan preview, video utama premium, dan file PDF agar member lebih mudah paham dan tertarik unlock.',
+                'question' => 'Saya ingin tahu urutan terbaik untuk menampilkan video pengantar, video utama premium, dan file PDF agar member lebih mudah paham dan tertarik membuka akses.',
                 'status' => 'answered',
                 'is_public' => true,
                 'asked_at' => now()->subDays(2),
@@ -270,7 +269,7 @@ class DemoLmsContentSeeder extends Seeder
             ['question_id' => $question->id],
             [
                 'mentor_id' => $mentor->id,
-                'answer' => 'Mulai dari preview gratis, lanjutkan dengan hasil yang ingin dicapai member, lalu arahkan ke unlock video utama dan PDF kerja. Urutan ini menjaga konteks dan meningkatkan konversi.',
+                'answer' => 'Mulai dari video pengantar, lanjutkan dengan hasil yang ingin dicapai member, lalu arahkan ke akses video utama dan PDF kerja. Urutan ini menjaga konteks belajar dan meningkatkan ketertarikan member.',
                 'answer_video_url' => $youtubeSecondaryUrl,
                 'is_published' => true,
                 'published_at' => now()->subDay(),

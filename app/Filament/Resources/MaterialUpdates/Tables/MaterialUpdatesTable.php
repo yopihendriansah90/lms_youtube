@@ -18,6 +18,9 @@ class MaterialUpdatesTable
     {
         return $table
             ->columns([
+                TextColumn::make('index')
+                    ->label('No.')
+                    ->rowIndex(),
                 TextColumn::make('material.title')
                     ->label('Materi')
                     ->searchable(),

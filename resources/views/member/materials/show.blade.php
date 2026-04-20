@@ -95,9 +95,7 @@
                                 </span>
                             </div>
                             <div class="mt-4 flex flex-wrap gap-2">
-                                @if ($primaryVideo->is_preview)
-                                    <span class="inline-chip">Preview Aktif</span>
-                                @endif
+                                <span class="inline-chip">{{ $primaryVideo->access_type === 'free' ? 'Video Gratis' : 'Video Premium' }}</span>
                                 <span class="inline-chip">{{ $primaryVideo->can_access ? 'Sudah Bisa Ditonton' : 'Masih Terkunci' }}</span>
                             </div>
                             <div class="mt-5 grid gap-3 sm:grid-cols-2">
@@ -244,15 +242,15 @@
                             </span>
                         </div>
                         <div class="mt-4 flex flex-wrap gap-2">
-                            <span class="inline-chip compact">{{ $video->is_preview ? 'Preview Aktif' : 'Video Penuh' }}</span>
+                            <span class="inline-chip compact">{{ $video->access_type === 'free' ? 'Video Gratis' : 'Video Premium' }}</span>
                             <span class="inline-chip compact border-brand-400/20 bg-brand-400/8 text-brand-200">
                                 {{ $video->can_access ? 'Sudah Terbuka' : 'Perlu Unlock' }}
                             </span>
                         </div>
                         <div class="mt-3 grid gap-2 sm:grid-cols-2">
                             <div class="rounded-2xl border border-white/8 bg-white/[0.015] px-3 py-2.5">
-                                <p class="meta-copy compact">Mode Tonton</p>
-                                <p class="mt-1 text-[13px] leading-5 font-semibold text-white">{{ $video->is_preview ? 'Preview tersedia untuk member.' : 'Video penuh dari materi ini.' }}</p>
+                                <p class="meta-copy compact">Jenis Video</p>
+                                <p class="mt-1 text-[13px] leading-5 font-semibold text-white">{{ $video->access_type === 'free' ? 'Video ini terbuka untuk semua member.' : 'Video ini mengikuti akses premium materi.' }}</p>
                             </div>
                             <div class="rounded-2xl border border-white/8 bg-white/[0.015] px-3 py-2.5">
                                 <p class="meta-copy compact">Status Akun</p>

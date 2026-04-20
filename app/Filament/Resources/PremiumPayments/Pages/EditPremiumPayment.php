@@ -1,22 +1,30 @@
 <?php
 
-namespace App\Filament\Resources\MaterialPayments\Pages;
+namespace App\Filament\Resources\PremiumPayments\Pages;
 
-use App\Filament\Resources\MaterialPayments\MaterialPaymentResource;
+use App\Filament\Resources\PremiumPayments\PremiumPaymentResource;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
-use Filament\Resources\Pages\CreateRecord;
+use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Enums\Width;
 use Illuminate\Validation\ValidationException;
 
-class CreateMaterialPayment extends CreateRecord
+class EditPremiumPayment extends EditRecord
 {
-    protected static string $resource = MaterialPaymentResource::class;
+    protected static string $resource = PremiumPaymentResource::class;
 
     protected Width|string|null $maxContentWidth = Width::Full;
 
     public function getTitle(): string
     {
-        return 'Tambah Pembayaran Premium';
+        return 'Edit Pembayaran Premium';
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+        ];
     }
 
     protected function onValidationError(ValidationException $exception): void

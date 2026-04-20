@@ -23,13 +23,13 @@ class MaterialResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBookOpen;
 
-    protected static ?string $navigationLabel = 'Materi';
+    protected static ?string $navigationLabel = 'Materi Video';
 
     protected static ?string $modelLabel = 'Materi';
 
     protected static ?string $pluralModelLabel = 'Materi';
 
-    protected static string|\UnitEnum|null $navigationGroup = null;
+    protected static string|\UnitEnum|null $navigationGroup = 'Konten Belajar';
 
     protected static ?int $navigationSort = 2;
 

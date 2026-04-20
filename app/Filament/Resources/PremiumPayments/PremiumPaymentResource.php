@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Filament\Resources\MaterialPayments;
+namespace App\Filament\Resources\PremiumPayments;
 
-use App\Filament\Resources\MaterialPayments\Pages\CreateMaterialPayment;
-use App\Filament\Resources\MaterialPayments\Pages\EditMaterialPayment;
-use App\Filament\Resources\MaterialPayments\Pages\ListMaterialPayments;
-use App\Filament\Resources\MaterialPayments\Schemas\MaterialPaymentForm;
-use App\Filament\Resources\MaterialPayments\Tables\MaterialPaymentsTable;
-use App\Models\MaterialPayment;
+use App\Filament\Resources\PremiumPayments\Pages\CreatePremiumPayment;
+use App\Filament\Resources\PremiumPayments\Pages\EditPremiumPayment;
+use App\Filament\Resources\PremiumPayments\Pages\ListPremiumPayments;
+use App\Filament\Resources\PremiumPayments\Schemas\PremiumPaymentForm;
+use App\Filament\Resources\PremiumPayments\Tables\PremiumPaymentsTable;
+use App\Models\PremiumPayment;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class MaterialPaymentResource extends Resource
+class PremiumPaymentResource extends Resource
 {
-    protected static ?string $model = MaterialPayment::class;
+    protected static ?string $model = PremiumPayment::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
@@ -32,12 +32,12 @@ class MaterialPaymentResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return MaterialPaymentForm::configure($schema);
+        return PremiumPaymentForm::configure($schema);
     }
 
     public static function table(Table $table): Table
     {
-        return MaterialPaymentsTable::configure($table);
+        return PremiumPaymentsTable::configure($table);
     }
 
     public static function getRelations(): array
@@ -48,9 +48,9 @@ class MaterialPaymentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListMaterialPayments::route('/'),
-            'create' => CreateMaterialPayment::route('/create'),
-            'edit' => EditMaterialPayment::route('/{record}/edit'),
+            'index' => ListPremiumPayments::route('/'),
+            'create' => CreatePremiumPayment::route('/create'),
+            'edit' => EditPremiumPayment::route('/{record}/edit'),
         ];
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\Materials\RelationManagers;
+namespace App\Filament\Resources\ZoomRecords\RelationManagers;
 
-use App\Models\Material;
+use App\Models\ZoomRecord;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -29,8 +29,8 @@ class MemberAccessRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                Section::make('Akses Member')
-                    ->description('Tambahkan akun member yang diizinkan mengakses seluruh video premium di materi ini.')
+                Section::make('Akses Member Rekaman Zoom')
+                    ->description('Tambahkan akun member yang diizinkan memutar rekaman Zoom ini.')
                     ->schema([
                         Select::make('user_id')
                             ->label('Pilih Member')
@@ -46,22 +46,20 @@ class MemberAccessRelationManager extends RelationManager
                             ->required()
                             ->rules([
                                 fn () => Rule::unique('content_unlocks', 'user_id')
-                                    ->where('unlockable_type', Material::class)
+                                    ->where('unlockable_type', ZoomRecord::class)
                                     ->where('unlockable_id', $this->getOwnerRecord()->getKey())
                                     ->ignore($this->getMountedTableActionRecord()?->getKey()),
                             ])
                             ->validationMessages([
-                                'unique' => 'Member ini sudah memiliki akses ke materi ini.',
-                            ])
-                            ->helperText('Hanya akun dengan role member yang dapat diberi akses manual dari tab ini.'),
+                                'unique' => 'Member ini sudah memiliki akses ke rekaman Zoom ini.',
+                            ]),
                         Hidden::make('access_source')
                             ->default('manual')
                             ->dehydrated(true),
                         DateTimePicker::make('starts_at')
                             ->label('Mulai Akses')
                             ->default(now())
-                            ->seconds(false)
-                            ->helperText('Kosongkan tanggal berakhir jika ingin akses terus aktif.'),
+                            ->seconds(false),
                         DateTimePicker::make('ends_at')
                             ->label('Berakhir Pada')
                             ->seconds(false),
@@ -116,8 +114,8 @@ class MemberAccessRelationManager extends RelationManager
                         'access_source' => 'manual',
                         'is_active' => $data['is_active'] ?? true,
                     ])
-                    ->modalHeading('Berikan Akses ke Member')
-                    ->modalDescription('Member yang ditambahkan di sini akan dapat membuka seluruh video premium dalam materi ini.'),
+                    ->modalHeading('Berikan Akses Rekaman Zoom')
+                    ->modalDescription('Member yang ditambahkan di sini akan dapat memutar rekaman Zoom ini dari portal member.'),
             ])
             ->recordActions([
                 EditAction::make()

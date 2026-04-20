@@ -61,7 +61,6 @@ return new class extends Migration
             $table->unsignedInteger('duration_in_seconds')->nullable();
             $table->string('access_type', 30)->default('free')->index();
             $table->decimal('price', 12, 2)->default(0);
-            $table->boolean('is_preview')->default(false);
             $table->boolean('is_published')->default(false)->index();
             $table->timestamp('published_at')->nullable();
             $table->unsignedInteger('sort_order')->default(0);
@@ -99,6 +98,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('zoom_recording_url')->nullable();
             $table->string('youtube_url')->nullable();
+            $table->string('youtube_video_id', 32)->nullable()->index();
             $table->string('thumbnail')->nullable();
             $table->timestamp('recorded_at')->nullable()->index();
             $table->string('access_type', 30)->default('free')->index();

@@ -21,7 +21,6 @@ class Video extends Model
         'duration_in_seconds',
         'access_type',
         'price',
-        'is_preview',
         'is_published',
         'published_at',
         'sort_order',
@@ -31,7 +30,6 @@ class Video extends Model
     {
         return [
             'price' => 'decimal:2',
-            'is_preview' => 'boolean',
             'is_published' => 'boolean',
             'published_at' => 'datetime',
         ];

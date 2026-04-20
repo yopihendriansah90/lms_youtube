@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\AdminMaterialPaymentProofController;
+use App\Http\Controllers\AdminPremiumPaymentProofController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\MemberPortalController;
 use Illuminate\Support\Facades\Route;
@@ -15,10 +15,10 @@ Route::middleware('guest')->group(function (): void {
 Route::middleware('auth')->group(function (): void {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 
-    Route::get('/admin/material-payments/{materialPayment}/proof/preview', [AdminMaterialPaymentProofController::class, 'preview'])
-        ->name('admin.material-payments.proof.preview');
-    Route::get('/admin/material-payments/{materialPayment}/proof/download', [AdminMaterialPaymentProofController::class, 'download'])
-        ->name('admin.material-payments.proof.download');
+    Route::get('/admin/premium-payments/{premiumPayment}/proof/preview', [AdminPremiumPaymentProofController::class, 'preview'])
+        ->name('admin.premium-payments.proof.preview');
+    Route::get('/admin/premium-payments/{premiumPayment}/proof/download', [AdminPremiumPaymentProofController::class, 'download'])
+        ->name('admin.premium-payments.proof.download');
 
     Route::get('/home', [MemberPortalController::class, 'dashboard'])->name('member.home');
     Route::get('/materi', [MemberPortalController::class, 'materials'])->name('member.materials');

@@ -9,7 +9,6 @@ use App\Filament\Resources\Videos\VideoResource;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 class VideosTable
@@ -18,6 +17,9 @@ class VideosTable
     {
         return $table
             ->columns([
+                TextColumn::make('index')
+                    ->label('No.')
+                    ->rowIndex(),
                 TextColumn::make('material.program.title')
                     ->label('Kelas Materi')
                     ->searchable(),
@@ -47,9 +49,6 @@ class VideosTable
                     ->label('Harga')
                     ->formatStateUsing(fn ($state) => 'Rp ' . number_format((float) $state, 0, ',', '.'))
                     ->sortable(),
-                IconColumn::make('is_preview')
-                    ->label('Preview')
-                    ->boolean(),
                 IconColumn::make('is_published')
                     ->label('Publish')
                     ->boolean(),
@@ -85,10 +84,8 @@ class VideosTable
                         'free' => 'Gratis',
                         'paid' => 'Berbayar',
                     ]),
-                TernaryFilter::make('is_published')
+                \Filament\Tables\Filters\TernaryFilter::make('is_published')
                     ->label('Status Publish'),
-                TernaryFilter::make('is_preview')
-                    ->label('Video Preview'),
             ])
             ->recordActions([
                 EditAction::make(),

@@ -41,9 +41,6 @@ class VideoInfolist
                 TextEntry::make('price')
                     ->label('Harga')
                     ->formatStateUsing(fn ($state) => 'Rp ' . number_format((float) $state, 0, ',', '.')),
-                IconEntry::make('is_preview')
-                    ->label('Preview')
-                    ->boolean(),
                 IconEntry::make('is_published')
                     ->label('Publish')
                     ->boolean(),

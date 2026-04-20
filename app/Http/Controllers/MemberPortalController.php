@@ -31,7 +31,6 @@ class MemberPortalController extends Controller
         $heroVideo = Video::query()
             ->with('material')
             ->where('is_published', true)
-            ->orderByDesc('is_preview')
             ->orderBy('sort_order')
             ->first();
 
@@ -335,11 +334,50 @@ class MemberPortalController extends Controller
 
     public function zoomRecords(Request $request): View
     {
+        $selectedSlug = $request->string('watch')->toString();
+        $shouldAutoplay = $request->boolean('autoplay');
+
+        $activeZoomRecord = ZoomRecord::query()
+            ->where('is_published', true)
+            ->when(
+                filled($selectedSlug),
+                fn ($query) => $query->where('slug', $selectedSlug),
+                fn ($query) => $query->orderByDesc('recorded_at')->orderBy('sort_order')
+            )
+            ->first();
+
+        $zoomRecords = ZoomRecord::query()
+            ->where('is_published', true)
+            ->orderByDesc('recorded_at')
+            ->orderBy('sort_order')
+            ->paginate(9)
+            ->through(function (ZoomRecord $record): ZoomRecord {
+                $record->setAttribute('youtube_embed_id', $record->youtube_video_id ?: PortalSettings::youtubeVideoId($record->youtube_url));
+                $record->setAttribute('thumbnail_url', $record->thumbnail_url);
+
+                return $record;
+            });
+
+        $activeZoomRecord ??= $zoomRecords->first();
+
+        if ($activeZoomRecord) {
+            $activeZoomRecord->setAttribute('youtube_embed_id', $activeZoomRecord->youtube_video_id ?: PortalSettings::youtubeVideoId($activeZoomRecord->youtube_url));
+            $activeZoomRecord->setAttribute('thumbnail_url', $activeZoomRecord->thumbnail_url);
+            $activeZoomRecord->setAttribute('can_access', $this->userCanAccessContent($request->user(), $activeZoomRecord));
+            $activeZoomRecord->setAttribute('request_access_url', $activeZoomRecord->can_access
+                ? null
+                : PortalSettings::whatsappUrl(
+                    $this->buildZoomAccessRequestMessage(
+                        memberName: $request->user()->name,
+                        zoomTitle: $activeZoomRecord->title,
+                    )
+                ));
+        }
+
         return view('member.zoom.index', [
-            'zoomRecords' => ZoomRecord::query()
-                ->where('is_published', true)
-                ->orderByDesc('recorded_at')
-                ->paginate(8),
+            'zoomRecords' => $zoomRecords,
+            'activeZoomRecord' => $activeZoomRecord,
+            'shouldAutoplayActiveZoom' => $shouldAutoplay,
             'user' => $request->user(),
         ]);
     }
@@ -465,6 +503,22 @@ class MemberPortalController extends Controller
 
         $message[] = '';
         $message[] = 'Mohon dibantu untuk proses aksesnya. Terima kasih.';
+
+        return Str::of(implode("\n", $message))->trim()->toString();
+    }
+
+    protected function buildZoomAccessRequestMessage(
+        string $memberName,
+        string $zoomTitle,
+    ): string {
+        $message = [
+            'Halo admin, saya ingin meminta akses ke rekaman Zoom.',
+            '',
+            'Nama member: '.$memberName,
+            'Rekaman Zoom: '.$zoomTitle,
+            '',
+            'Mohon dibantu untuk proses aksesnya. Terima kasih.',
+        ];
 
         return Str::of(implode("\n", $message))->trim()->toString();
     }

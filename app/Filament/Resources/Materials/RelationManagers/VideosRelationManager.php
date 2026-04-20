@@ -84,10 +84,6 @@ class VideosRelationManager extends RelationManager
                         Hidden::make('price')
                             ->default(0)
                             ->dehydrated(true),
-                        Toggle::make('is_preview')
-                            ->label('Preview')
-                            ->default(false)
-                            ->helperText('Aktifkan jika video ini boleh ditonton sebagai cuplikan walau akses premium.'),
                         Toggle::make('is_published')
                             ->label('Publikasikan')
                             ->default(false)
@@ -111,6 +107,9 @@ class VideosRelationManager extends RelationManager
     {
         return $table
             ->columns([
+                TextColumn::make('index')
+                    ->label('No.')
+                    ->rowIndex(),
                 TextColumn::make('title')
                     ->label('Judul Video')
                     ->searchable()
@@ -119,9 +118,6 @@ class VideosRelationManager extends RelationManager
                     ->label('Akses')
                     ->badge()
                     ->color(fn (string $state): string => $state === 'paid' ? 'warning' : 'success'),
-                IconColumn::make('is_preview')
-                    ->label('Preview')
-                    ->boolean(),
                 IconColumn::make('is_published')
                     ->label('Publish')
                     ->boolean(),

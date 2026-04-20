@@ -71,10 +71,6 @@ class VideoForm
                         Hidden::make('price')
                             ->default(0)
                             ->dehydrated(true),
-                        Toggle::make('is_preview')
-                            ->label('Video Preview')
-                            ->default(false)
-                            ->required(),
                         Toggle::make('is_published')
                             ->label('Publikasikan')
                             ->default(false)

@@ -102,13 +102,23 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(ContentUnlock::class);
     }
 
+    public function premiumPayments(): HasMany
+    {
+        return $this->hasMany(PremiumPayment::class);
+    }
+
+    public function verifiedPremiumPayments(): HasMany
+    {
+        return $this->hasMany(PremiumPayment::class, 'verified_by');
+    }
+
     public function materialPayments(): HasMany
     {
-        return $this->hasMany(MaterialPayment::class);
+        return $this->premiumPayments();
     }
 
     public function verifiedMaterialPayments(): HasMany
     {
-        return $this->hasMany(MaterialPayment::class, 'verified_by');
+        return $this->verifiedPremiumPayments();
     }
 }
