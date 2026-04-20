@@ -2,10 +2,6 @@
 
 Panduan ini menjelaskan halaman utama yang dipakai member untuk belajar, mengikuti Zoom live, dan menonton ulang rekaman.
 
-Catatan dokumentasi:
-
-- Panduan ini hanya memuat halaman yang memang bisa diakses oleh akun member.
-- Jika ada halaman yang mengembalikan `403 Forbidden`, halaman tersebut tidak dimasukkan ke dokumentasi maupun screenshot.
 
 ## Akses Login
 

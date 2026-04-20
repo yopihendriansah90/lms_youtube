@@ -2,10 +2,6 @@
 
 Panduan ini menjelaskan halaman utama admin panel LMS dan alur kerja yang paling sering dipakai saat mengelola konten belajar, sesi live, rekaman Zoom, dan pembayaran premium.
 
-Catatan dokumentasi:
-
-- Hanya halaman yang benar-benar bisa diakses yang dimasukkan ke panduan ini.
-- Resource atau halaman yang mengembalikan `403 Forbidden` sengaja tidak di-screenshot dan tidak didokumentasikan.
 
 ## Akses Login
 
