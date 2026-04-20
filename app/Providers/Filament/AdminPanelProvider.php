@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Widgets\AdminActivityPanels;
 use App\Filament\Widgets\AdminOperationsOverview;
 use App\Filament\Widgets\AdminQuickActions;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -36,6 +37,7 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->plugin(FilamentShieldPlugin::make())
             ->databaseNotifications(isLazy: false)
             ->databaseNotificationsPolling('3s')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
