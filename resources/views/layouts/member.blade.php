@@ -18,7 +18,7 @@
 
         <main class="app-shell relative">
             <div class="mb-5 flex items-center justify-between lg:mb-8">
-                <a href="{{ route('member.home') }}" class="flex items-center gap-3">
+                <a href="{{ route('public.home') }}" class="flex items-center gap-3">
                     <div class="flex h-11 w-11 items-center justify-center rounded-[18px] bg-[linear-gradient(135deg,#3f73f4,#35d6a6)] text-lg font-black text-white shadow-[0_10px_28px_rgba(63,115,244,0.3)]">
                         A
                     </div>
@@ -45,6 +45,15 @@
                         @csrf
                         <button type="submit" class="secondary-btn px-4 py-2.5 text-xs">Keluar</button>
                     </form>
+                @else
+                    <div class="desktop-nav">
+                        <a href="{{ route('public.home') }}" class="desktop-nav-link {{ request()->routeIs('public.home') ? 'is-active' : '' }}">Beranda</a>
+                        <a href="{{ route('member.materials') }}" class="desktop-nav-link">Materi</a>
+                        <a href="{{ route('member.zoom') }}" class="desktop-nav-link">Rekaman</a>
+                        <a href="{{ route('member.rooms') }}" class="desktop-nav-link">Room Zoom</a>
+                    </div>
+
+                    <a href="{{ route('login') }}" class="secondary-btn px-4 py-2.5 text-xs">Masuk</a>
                 @endauth
             </div>
 

@@ -23,9 +23,11 @@
                 <p class="supporting-copy mt-3">Arsip sesi kelas dan workshop yang sudah tersedia.</p>
             </div>
             <div class="stat-card">
-                <p class="meta-copy">Pertanyaan Anda</p>
+                <p class="meta-copy">{{ $isPublicHome ?? false ? 'Pertanyaan Live' : 'Pertanyaan Anda' }}</p>
                 <p class="stat-value">{{ $stats['questions'] }}</p>
-                <p class="supporting-copy mt-3">Riwayat diskusi member yang sudah pernah Anda kirim.</p>
+                <p class="supporting-copy mt-3">
+                    {{ $isPublicHome ?? false ? 'Diskusi member yang terkumpul dari sesi pembelajaran live.' : 'Riwayat diskusi member yang sudah pernah Anda kirim.' }}
+                </p>
             </div>
         </div>
 

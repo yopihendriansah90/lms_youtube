@@ -23,6 +23,146 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class MemberPortalController extends Controller
 {
+    public function publicHome(Request $request): View
+    {
+        $heroVideoUrl = PortalSettings::get('portal.hero_video_url');
+        $heroVideoId = PortalSettings::youtubeVideoId($heroVideoUrl);
+
+        $heroVideo = Video::query()
+            ->with('material')
+            ->where('is_published', true)
+            ->orderBy('sort_order')
+            ->first();
+
+        $latestZoomRecords = ZoomRecord::query()
+            ->where('is_published', true)
+            ->latest('recorded_at')
+            ->limit(1)
+            ->get();
+
+        $liveZoomRoom = ZoomRoom::query()
+            ->where('is_published', true)
+            ->where('status', 'live')
+            ->orderByDesc('starts_at')
+            ->first();
+
+        $upcomingZoomRooms = ZoomRoom::query()
+            ->where('is_published', true)
+            ->where('status', 'scheduled')
+            ->orderBy('starts_at')
+            ->limit(2)
+            ->get();
+
+        $mentors = MentorProfile::query()
+            ->with('user')
+            ->where('is_active', true)
+            ->orderBy('display_name')
+            ->limit(2)
+            ->get();
+
+        $activeMeeting = [
+            'title' => $liveZoomRoom?->title ?: PortalSettings::get('portal.active_meeting_title', 'Workshop React Hooks - Batch 12'),
+            'schedule' => $liveZoomRoom?->starts_at?->translatedFormat('l, d F Y') ?: PortalSettings::get('portal.active_meeting_schedule', 'Kamis, 23 Januari 2025'),
+            'time' => $liveZoomRoom?->starts_at
+                ? $liveZoomRoom->starts_at->format('H:i') . ' WIB'
+                : PortalSettings::get('portal.active_meeting_time', '14:00 - 16:00 WIB'),
+            'status' => $liveZoomRoom ? 'Sedang Berlangsung' : PortalSettings::get('portal.active_meeting_status', 'Sedang Berlangsung'),
+        ];
+
+        $upcomingMeetings = $upcomingZoomRooms->map(function (ZoomRoom $room): array {
+            return [
+                'day' => $room->starts_at?->translatedFormat('D') ?? 'Jadwal',
+                'time' => $room->starts_at?->format('H:i').' WIB' ?? '-',
+                'title' => $room->title,
+            ];
+        });
+
+        $featuredRoomCard = $liveZoomRoom
+            ?: ZoomRoom::query()
+                ->where('is_published', true)
+                ->where('status', 'scheduled')
+                ->orderBy('starts_at')
+                ->first();
+
+        $newUpdatesCount = MaterialUpdate::query()
+            ->where('is_published', true)
+            ->whereDate('published_at', '>=', now()->subDays(7))
+            ->count();
+
+        $menuCards = collect([
+            [
+                'title' => 'Dashboard Materi',
+                'description' => 'Akses modul pembelajaran lengkap dan kurikulum pelatihan terbaru.',
+                'action' => 'Buka Materi',
+                'href' => route('member.materials'),
+                'icon' => 'heroicon-o-book-open',
+                'accent' => 'from-brand-500/20 via-brand-500/6 to-transparent',
+                'iconWrap' => 'bg-brand-500/16 text-brand-200',
+                'badge' => $newUpdatesCount > 0 ? $newUpdatesCount.' baru' : null,
+            ],
+            [
+                'title' => 'Room Zoom Meeting',
+                'description' => 'Pantau sesi live yang sedang berlangsung dan jadwal Zoom berikutnya.',
+                'action' => 'Lihat Room',
+                'href' => route('member.rooms'),
+                'icon' => 'heroicon-o-video-camera',
+                'accent' => 'from-amber-400/18 via-amber-400/6 to-transparent',
+                'iconWrap' => 'bg-amber-400/14 text-amber-300',
+            ],
+            [
+                'title' => 'Rekaman Zoom',
+                'description' => 'Buka kembali sesi meeting yang sudah berlangsung dari arsip kelas.',
+                'action' => 'Lihat Rekaman',
+                'href' => route('member.zoom'),
+                'icon' => 'heroicon-o-play-circle',
+                'accent' => 'from-cyan-400/20 via-cyan-400/6 to-transparent',
+                'iconWrap' => 'bg-cyan-400/14 text-cyan-300',
+            ],
+            [
+                'title' => $featuredRoomCard?->title ?? 'Jadwal Zoom Berikutnya',
+                'description' => $featuredRoomCard
+                    ? collect([
+                        $featuredRoomCard->status === 'live' ? 'Sedang berlangsung sekarang.' : 'Sesi terdekat yang siap diikuti member.',
+                        $featuredRoomCard->starts_at?->translatedFormat('d M Y') ?: null,
+                        $featuredRoomCard->starts_at ? $featuredRoomCard->starts_at->format('H:i') . ' WIB' : null,
+                    ])->filter()->join(' ')
+                    : 'Pantau sesi live terbaru atau jadwal Zoom berikutnya dari dashboard.',
+                'action' => $featuredRoomCard?->status === 'live' ? 'Masuk ke Room' : 'Lihat Jadwal',
+                'href' => $featuredRoomCard
+                    ? route('member.rooms', ['room' => $featuredRoomCard->slug])
+                    : route('member.rooms'),
+                'icon' => 'heroicon-o-signal',
+                'accent' => 'from-mint-400/18 via-mint-400/6 to-transparent',
+                'iconWrap' => 'bg-mint-400/14 text-mint-300',
+                'badge' => $featuredRoomCard
+                    ? ($featuredRoomCard->status === 'live' ? 'Live' : 'Segera')
+                    : null,
+            ],
+        ]);
+
+        return view('member.dashboard', [
+            'user' => $request->user(),
+            'isPublicHome' => true,
+            'heroVideo' => $heroVideo,
+            'homeBadge' => PortalSettings::get('portal.home_badge'),
+            'homeTitle' => PortalSettings::get('portal.hero_title', 'Selamat Datang di Alfaruq WFA'),
+            'homeDescription' => PortalSettings::get('portal.hero_description', 'Akses materi pelatihan, sesi tanya jawab, dan rekaman pertemuan Anda dalam satu ruang kerja digital yang terintegrasi.'),
+            'heroVideoEmbedId' => $heroVideoId ?: $heroVideo?->youtube_video_id,
+            'heroVideoHeading' => PortalSettings::get('portal.hero_video_heading', 'Video Penjelasan'),
+            'heroVideoCaption' => PortalSettings::get('portal.hero_video_caption', $heroVideo?->material?->title ?? 'Tempat Video'),
+            'latestZoomRecord' => $latestZoomRecords->first(),
+            'activeMeeting' => $activeMeeting,
+            'upcomingMeetings' => $upcomingMeetings,
+            'mentors' => $mentors,
+            'menuCards' => $menuCards,
+            'stats' => [
+                'materials' => Material::query()->where('status', 'published')->count(),
+                'zoomRecords' => ZoomRecord::query()->where('is_published', true)->count(),
+                'questions' => ZoomRoomQuestion::query()->count(),
+            ],
+        ]);
+    }
+
     public function dashboard(Request $request): View
     {
         $user = $request->user();
@@ -144,6 +284,7 @@ class MemberPortalController extends Controller
 
         return view('member.dashboard', [
             'user' => $user,
+            'isPublicHome' => false,
             'heroVideo' => $heroVideo,
             'homeBadge' => PortalSettings::get('portal.home_badge'),
             'homeTitle' => PortalSettings::get('portal.hero_title', 'Selamat Datang di Alfaruq WFA'),

@@ -10,9 +10,9 @@ class ExampleTest extends TestCase
     /**
      * A basic test example.
      */
-    public function test_guest_users_are_redirected_from_root_to_login(): void
+    public function test_guest_users_are_redirected_from_private_member_routes_to_login(): void
     {
-        $response = $this->get('/');
+        $response = $this->get('/materi');
 
         $response->assertRedirect(route('login'));
     }
